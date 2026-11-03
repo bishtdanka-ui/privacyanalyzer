@@ -33,15 +33,27 @@ An enterprise-grade, explainable security auditing platform that analyzes Androi
 6. **Automated PDF Report Generation**:
    - Generates official PDF audit certificates using `reportlab`, containing executive summaries, risk gauges, multi-permission threat scenarios, policy discrepancy tables, and developer remediation checklists.
 
-7. **Security & Authentication (RBAC)**:
+7. **Security & Authentication (RBAC) & Sessions**:
    - Real persistent database authentication using SQLAlchemy (SQLite development database, PostgreSQL-compatible architecture).
    - Password hashing using `bcrypt` (with standard salt rounds).
    - Cryptographically signed JWT bearer tokens (`pyjwt`).
+   - Active session tracking in `user_sessions` table.
+   - Dedicated Analyst Profile page with live session inspection and password rotation.
    - Role-Based Access Control (`user` vs `admin`).
    - Immutable security audit logging for compliance.
 
 8. **Admin Management & Platform Telemetry**:
    - System-wide statistics on analyzed applications, risk distribution, top dangerous permissions across the ecosystem, user account activation/deactivation, role promotion, and security event logs.
+
+9. **Normalized 8-Table Database Architecture with Alembic Migrations**:
+   - `users`: User identity, hashed passwords, roles, status
+   - `user_sessions`: Active JWT sessions, IP addresses, client user-agents, expirations
+   - `analyses`: Application manifest audit metadata, risk score, package name
+   - `permissions`: Granular permission protection levels, abuse scenarios, severity scores
+   - `policy_excerpts`: Text snippets and stances extracted from privacy policies
+   - `comparison_findings`: Correlated threat chains and discrepancy findings
+   - `reports`: Saved PDF audit reports, paths, and metadata
+   - `audit_logs`: Immutable compliance trail of user and admin actions
 
 ---
 
