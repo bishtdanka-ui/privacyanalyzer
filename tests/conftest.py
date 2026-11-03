@@ -80,3 +80,4 @@ def user_auth_headers(normal_user):
 def admin_auth_headers(admin_user):
     token = create_access_token(data={"sub": str(admin_user.id), "role": admin_user.role, "username": admin_user.username})
     return {"Authorization": f"Bearer {token}"}
+

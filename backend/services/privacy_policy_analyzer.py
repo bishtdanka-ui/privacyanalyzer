@@ -109,3 +109,4 @@ class PrivacyPolicyAnalyzer:
             "data_retention_mentioned": retention_mentioned,
             "summary": f"Policy analyzed across {len(disclosed_domains)} declared domains with {len(negated_domains)} explicit privacy assurances."
         }
+

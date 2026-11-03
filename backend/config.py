@@ -25,3 +25,4 @@ class Settings:
     REPORT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 settings = Settings()
+

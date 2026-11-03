@@ -63,3 +63,4 @@ def render_auth_view():
                                 st.success("Account registered successfully! Please sign in using your credentials.")
                             else:
                                 st.error(str(resp))
+

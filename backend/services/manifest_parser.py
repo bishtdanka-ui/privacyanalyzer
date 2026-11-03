@@ -155,3 +155,4 @@ class ManifestParser:
             "exported_count": len(exported_components),
             "sdk_warnings": sdk_warnings
         }
+

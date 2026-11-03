@@ -170,3 +170,4 @@ Run the complete test suite with 100% pass verification:
 python -m pytest -v
 ```
 All 12 unit and integration tests verify manifest parsing, XML bomb rejection, explainability calculations, policy contradiction matching, JWT authentication, and PDF report creation.
+

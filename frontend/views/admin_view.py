@@ -84,3 +84,4 @@ def render_admin_view():
             st.dataframe(df_logs[display_cols], use_container_width=True, hide_index=True)
         else:
             st.info("No audit logs available.")
+

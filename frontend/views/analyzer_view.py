@@ -143,3 +143,4 @@ def render_analyzer_view():
                 set_page("Results")
             else:
                 st.error(f"Analysis failed: {result}")
+

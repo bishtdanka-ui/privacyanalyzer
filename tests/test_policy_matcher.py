@@ -45,3 +45,4 @@ def test_undisclosed_dangerous_permission():
     undisclosed = [d for d in discrepancies if d["issue_type"] == "UNDISCLOSED_DANGEROUS_PERMISSION"]
     assert len(undisclosed) == 1
     assert undisclosed[0]["permission_name"] == "android.permission.READ_CONTACTS"
+

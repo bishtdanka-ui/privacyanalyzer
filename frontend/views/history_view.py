@@ -14,7 +14,7 @@ def render_history_view():
     if not success or not history_data:
         st.info("No prior analysis records found. Run an audit from the Privacy Analyzer tab to create persistent records.")
         if st.button("Launch New Audit"):
-            set_page("Privacy Analyzer")
+            set_page("New Analysis")
         return
 
     # Filter by risk level
@@ -69,3 +69,4 @@ def render_history_view():
                             st.rerun()
                         else:
                             st.error(str(del_msg))
+

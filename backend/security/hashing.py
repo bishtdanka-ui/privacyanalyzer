@@ -20,3 +20,4 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         return bcrypt.checkpw(pwd_bytes, hash_bytes)
     except Exception:
         return False
+

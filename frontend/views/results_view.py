@@ -14,8 +14,8 @@ def render_results_view():
     data = st.session_state.get("active_analysis")
     if not data:
         st.warning("No active analysis selected. Please run an audit or select one from history.")
-        if st.button("Go to Privacy Analyzer"):
-            set_page("Privacy Analyzer")
+        if st.button("Go to New Analysis"):
+            set_page("New Analysis")
         return
 
     token = st.session_state.get("token")
@@ -145,4 +145,5 @@ def render_results_view():
 
     st.markdown("---")
     if st.button("⬅️ Run Another Audit", use_container_width=True):
-        set_page("Privacy Analyzer")
+        set_page("New Analysis")
+

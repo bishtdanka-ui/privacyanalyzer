@@ -5,7 +5,8 @@ from sqlalchemy import func
 
 from backend.database import get_db
 from backend.models.user import User
-from backend.models.analysis import AnalysisRecord
+from backend.models.analysis import Analysis
+from backend.models.permission import Permission
 from backend.models.audit_log import AuditLog
 from backend.schemas.auth import UserResponse
 from backend.schemas.admin import AdminUserUpdate, SystemStatsResponse, AuditLogResponse
@@ -19,9 +20,6 @@ def get_all_users(
     admin_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    """
-    List all registered platform users.
-    """
     return db.query(User).order_by(User.created_at.desc()).all()
 
 @router.patch("/users/{user_id}", response_model=UserResponse)
@@ -31,9 +29,6 @@ def update_user_status(
     admin_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    """
-    Update user role or active status.
-    """
     target = db.query(User).filter(User.id == user_id).first()
     if not target:
         raise HTTPException(status_code=404, detail="User not found.")
@@ -68,32 +63,31 @@ def get_system_stats(
     admin_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    """
-    Aggregate cross-application security metrics and system telemetry.
-    """
     total_users = db.query(func.count(User.id)).scalar() or 0
-    total_analyses = db.query(func.count(AnalysisRecord.id)).scalar() or 0
+    total_analyses = db.query(func.count(Analysis.id)).scalar() or 0
 
-    critical_risk = db.query(func.count(AnalysisRecord.id)).filter(AnalysisRecord.risk_level == "CRITICAL").scalar() or 0
-    high_risk = db.query(func.count(AnalysisRecord.id)).filter(AnalysisRecord.risk_level == "HIGH").scalar() or 0
-    medium_risk = db.query(func.count(AnalysisRecord.id)).filter(AnalysisRecord.risk_level == "MEDIUM").scalar() or 0
-    low_risk = db.query(func.count(AnalysisRecord.id)).filter(AnalysisRecord.risk_level == "LOW").scalar() or 0
+    critical_risk = db.query(func.count(Analysis.id)).filter(Analysis.risk_level == "CRITICAL").scalar() or 0
+    high_risk = db.query(func.count(Analysis.id)).filter(Analysis.risk_level == "HIGH").scalar() or 0
+    medium_risk = db.query(func.count(Analysis.id)).filter(Analysis.risk_level == "MEDIUM").scalar() or 0
+    low_risk = db.query(func.count(Analysis.id)).filter(Analysis.risk_level == "LOW").scalar() or 0
 
-    avg_score = db.query(func.avg(AnalysisRecord.risk_score)).scalar() or 0.0
+    avg_score = db.query(func.avg(Analysis.risk_score)).scalar() or 0.0
 
-    # Aggregate top dangerous permissions
-    all_records = db.query(AnalysisRecord.manifest_data).all()
-    perm_counter: Dict[str, int] = {}
-    for (m_data,) in all_records:
-        if m_data and "permissions" in m_data:
-            for p in m_data["permissions"]:
-                if p.get("protection_level") in ("dangerous", "special"):
-                    p_name = p.get("short_name", p.get("name", "Unknown"))
-                    perm_counter[p_name] = perm_counter.get(p_name, 0) + 1
+    # Aggregate top dangerous permissions directly from the normalized permissions table
+    top_perm_rows = db.query(
+        Permission.short_name,
+        func.count(Permission.id).label("freq")
+    ).filter(
+        Permission.protection_level.in_(["dangerous", "special", "signature/special"])
+    ).group_by(
+        Permission.short_name
+    ).order_by(
+        func.count(Permission.id).desc()
+    ).limit(8).all()
 
     top_perms = [
-        {"permission": k, "frequency": v}
-        for k, v in sorted(perm_counter.items(), key=lambda x: x[1], reverse=True)[:8]
+        {"permission": row[0], "frequency": row[1]}
+        for row in top_perm_rows
     ]
 
     # Recent audit events
@@ -126,9 +120,6 @@ def get_audit_logs(
     admin_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    """
-    Retrieve system security audit trail.
-    """
     entries = db.query(AuditLog).order_by(AuditLog.created_at.desc()).limit(limit).all()
     results = []
     for e in entries:

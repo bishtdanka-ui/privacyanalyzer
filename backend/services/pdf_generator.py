@@ -253,3 +253,4 @@ class PDFReportGenerator:
         # Build document
         doc.build(story)
         return str(filepath)
+

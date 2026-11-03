@@ -65,3 +65,4 @@ class PermissionKnowledgeBase:
         return self._kb_data.get("combo_rules", [])
 
 permission_kb = PermissionKnowledgeBase.get_instance()
+

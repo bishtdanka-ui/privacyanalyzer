@@ -71,10 +71,10 @@ def render_dashboard_view():
         """)
         
         if st.button("🚀 Launch New Application Audit", type="primary", use_container_width=True):
-            set_page("Privacy Analyzer")
+            set_page("New Analysis")
 
         if st.button("📂 Load Pre-Built Security Benchmarks", use_container_width=True):
-            set_page("Privacy Analyzer")
+            set_page("New Analysis")
 
         st.markdown("#### 🔍 Problem Statement Coverage")
         st.markdown("""
@@ -83,3 +83,4 @@ def render_dashboard_view():
         - **Discrepancy Detection:** Identifies contradictions between policy promises and manifest requests.
         - **Exportable PDF Reports:** ReportLab-generated audit certificates.
         """)
+

@@ -35,3 +35,4 @@ def logout_user():
 def set_page(page_name: str):
     st.session_state["current_page"] = page_name
     st.rerun()
+

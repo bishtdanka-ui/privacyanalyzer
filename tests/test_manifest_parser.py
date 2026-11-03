@@ -37,3 +37,4 @@ def test_parse_invalid_xml_error():
 def test_parse_empty_content_error():
     with pytest.raises(ManifestParseError):
         ManifestParser.parse_xml_content("")
+

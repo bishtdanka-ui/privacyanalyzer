@@ -54,6 +54,42 @@ class APIClient:
         except Exception as e:
             return False, str(e)
 
+    def update_profile(self, full_name: Optional[str], email: Optional[str], token: str) -> Tuple[bool, Any]:
+        url = f"{self.base_url}/auth/me"
+        payload = {}
+        if full_name is not None:
+            payload["full_name"] = full_name
+        if email is not None:
+            payload["email"] = email
+        try:
+            resp = requests.patch(url, json=payload, headers=self._headers(token), timeout=10)
+            if resp.status_code == 200:
+                return True, resp.json()
+            return False, resp.json().get("detail", "Failed to update profile.")
+        except Exception as e:
+            return False, str(e)
+
+    def change_password(self, old_pwd: str, new_pwd: str, token: str) -> Tuple[bool, Any]:
+        url = f"{self.base_url}/auth/change-password"
+        payload = {"old_password": old_pwd, "new_password": new_pwd}
+        try:
+            resp = requests.post(url, json=payload, headers=self._headers(token), timeout=10)
+            if resp.status_code == 200:
+                return True, resp.json()
+            return False, resp.json().get("detail", "Failed to change password.")
+        except Exception as e:
+            return False, str(e)
+
+    def get_sessions(self, token: str) -> Tuple[bool, Any]:
+        url = f"{self.base_url}/auth/sessions"
+        try:
+            resp = requests.get(url, headers=self._headers(token), timeout=10)
+            if resp.status_code == 200:
+                return True, resp.json()
+            return False, resp.json().get("detail", "Failed to load sessions.")
+        except Exception as e:
+            return False, str(e)
+
     def analyze_manifest_text(
         self,
         manifest_xml: str,
@@ -188,3 +224,4 @@ class APIClient:
             return False, str(e)
 
 api_client = APIClient()
+

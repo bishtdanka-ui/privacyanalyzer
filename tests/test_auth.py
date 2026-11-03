@@ -7,6 +7,7 @@ from backend.schemas.auth import UserRegister, UserLogin, PasswordChangeRequest
 def make_mock_request(client_ip="127.0.0.1"):
     mock = MagicMock()
     mock.client.host = client_ip
+    mock.headers = {"user-agent": "pytest-test-suite"}
     return mock
 
 def test_register_and_login_flow(db_session):

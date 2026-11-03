@@ -7,3 +7,4 @@ if __name__ == "__main__":
     cmd = [sys.executable, "-m", "streamlit", "run", str(frontend_app), "--server.port", "8501"]
     print(f"Starting Streamlit Frontend on http://localhost:8501...")
     subprocess.run(cmd)
+
