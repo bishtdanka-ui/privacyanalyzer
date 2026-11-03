@@ -1,0 +1,455 @@
+{
+  "permissions": {
+    "android.permission.CAMERA": {
+      "short_name": "CAMERA",
+      "group": "Camera",
+      "protection_level": "dangerous",
+      "description": "Required to be able to access the camera device for taking photos or capturing video.",
+      "privacy_risk": "Allows the app to secretly record photos or video streams of the user and their surroundings at any time.",
+      "abuse_scenarios": [
+        "Covert video recording and espionage by stalkerware or spyware.",
+        "Facial biometric harvesting without explicit real-time consent."
+      ],
+      "privacy_keywords": ["camera", "photo", "take pictures", "record video", "selfie", "lens", "snapshot"],
+      "severity_score": 8.5,
+      "remediation": "If the app only needs occasional photos, use the Android Photo Picker or ACTION_IMAGE_CAPTURE intent instead of requesting raw CAMERA permission."
+    },
+    "android.permission.RECORD_AUDIO": {
+      "short_name": "RECORD_AUDIO",
+      "group": "Microphone",
+      "protection_level": "dangerous",
+      "description": "Allows an application to record audio using the device microphone.",
+      "privacy_risk": "Enables continuous ambient eavesdropping, recording private spoken conversations, acoustic fingerprinting, and ultrasound beacon tracking.",
+      "abuse_scenarios": [
+        "Stalkerware capturing private meetings and phone calls.",
+        "Ad-tech SDKs listening for TV/media ultrasound watermarks."
+      ],
+      "privacy_keywords": ["microphone", "audio", "record sound", "voice", "speech", "listen", "ambient"],
+      "severity_score": 9.0,
+      "remediation": "Use system audio intents or clearly disclose when recording is active with distinct visual indicators."
+    },
+    "android.permission.ACCESS_FINE_LOCATION": {
+      "short_name": "ACCESS_FINE_LOCATION",
+      "group": "Location",
+      "protection_level": "dangerous",
+      "description": "Allows an app to access precise location from GPS, cellular towers, and Wi-Fi beacons (accuracy typically within a few meters).",
+      "privacy_risk": "Exposes exact physical residence, workplace, daily travel routes, medical visits, and real-time physical tracking.",
+      "abuse_scenarios": [
+        "Unconsented geofencing, real-time physical stalking, and selling precise location telemetry to data brokers."
+      ],
+      "privacy_keywords": ["location", "gps", "precise location", "geographic", "coordinates", "places", "maps", "navigation"],
+      "severity_score": 8.5,
+      "remediation": "Evaluate if coarse location (ACCESS_COARSE_LOCATION) is sufficient for city-level weather or regional content."
+    },
+    "android.permission.ACCESS_COARSE_LOCATION": {
+      "short_name": "ACCESS_COARSE_LOCATION",
+      "group": "Location",
+      "protection_level": "dangerous",
+      "description": "Allows an app to access approximate location derived from network location sources such as cell towers and Wi-Fi.",
+      "privacy_risk": "Can pinpoint user's neighborhood, town, or transit corridor without GPS precision.",
+      "abuse_scenarios": [
+        "Targeted advertising profiling and regional behavioral pattern tracking."
+      ],
+      "privacy_keywords": ["location", "approximate location", "coarse location", "neighborhood", "city", "region"],
+      "severity_score": 6.0,
+      "remediation": "Only request when location is strictly relevant to user utility; never require mandatory grant for non-location apps."
+    },
+    "android.permission.ACCESS_BACKGROUND_LOCATION": {
+      "short_name": "ACCESS_BACKGROUND_LOCATION",
+      "group": "Location",
+      "protection_level": "dangerous",
+      "description": "Allows an app to access location in the background when the user is not actively interacting with the app.",
+      "privacy_risk": "Uninterrupted 24/7 surveillance of movements, habits, and associations even while the phone is locked or another app is active.",
+      "abuse_scenarios": [
+        "Covert persistent movement surveillance and automated life-pattern profiling."
+      ],
+      "privacy_keywords": ["background location", "always allow location", "passive tracking", "continuous location"],
+      "severity_score": 9.5,
+      "remediation": "Google Play policy strictly restricts background location. Use foreground services with prominent user notification."
+    },
+    "android.permission.READ_CONTACTS": {
+      "short_name": "READ_CONTACTS",
+      "group": "Contacts",
+      "protection_level": "dangerous",
+      "description": "Allows an application to read the user's contacts data, including names, phone numbers, email addresses, and relationship notes.",
+      "privacy_risk": "Exfiltrates social graph, exposing not only the user's data but also third parties' private unlisted phone numbers and details.",
+      "abuse_scenarios": [
+        "Contact scraping by predatory loan apps, blackmail campaigns, and social spam syndicates."
+      ],
+      "privacy_keywords": ["contacts", "address book", "phonebook", "friends", "colleagues", "connections"],
+      "severity_score": 8.5,
+      "remediation": "Use the Contacts Provider Contact Picker intent to allow the user to select only single contacts on demand."
+    },
+    "android.permission.WRITE_CONTACTS": {
+      "short_name": "WRITE_CONTACTS",
+      "group": "Contacts",
+      "protection_level": "dangerous",
+      "description": "Allows an application to write or modify the user's contacts data.",
+      "privacy_risk": "Malicious modification or deletion of contacts; injection of phishing URLs into contact entries.",
+      "abuse_scenarios": [
+        "Contact wiping malware or poisoning address books with phishing hyperlinks."
+      ],
+      "privacy_keywords": ["contacts", "save contacts", "edit address book"],
+      "severity_score": 7.0,
+      "remediation": "Do not request WRITE_CONTACTS unless building a dedicated address book synchronization manager."
+    },
+    "android.permission.READ_CALL_LOG": {
+      "short_name": "READ_CALL_LOG",
+      "group": "Call Log",
+      "protection_level": "dangerous",
+      "description": "Allows an application to read the user's call log, including incoming, outgoing, and missed call numbers, timestamps, and durations.",
+      "privacy_risk": "Reveals sensitive interpersonal communications, hotlines called (e.g. medical, legal, crisis), and relationship dynamics.",
+      "abuse_scenarios": [
+        "Extortion by loan shark apps and spying on communications by stalkerware."
+      ],
+      "privacy_keywords": ["call log", "call history", "phone records", "missed calls"],
+      "severity_score": 9.0,
+      "remediation": "Restricted by Google Play. Only apps acting as the default phone handler are permitted to access this."
+    },
+    "android.permission.WRITE_CALL_LOG": {
+      "short_name": "WRITE_CALL_LOG",
+      "group": "Call Log",
+      "protection_level": "dangerous",
+      "description": "Allows an application to write (but not read) the user's call log data.",
+      "privacy_risk": "Malicious apps can erase evidence of fraud calls or inject fraudulent records to impersonate authorities.",
+      "abuse_scenarios": [
+        "Erasing traces of unauthorized toll/premium outbound calls."
+      ],
+      "privacy_keywords": ["call log", "modify call history"],
+      "severity_score": 7.5,
+      "remediation": "Only dedicated dialers should request call log modification."
+    },
+    "android.permission.READ_PHONE_STATE": {
+      "short_name": "READ_PHONE_STATE",
+      "group": "Phone",
+      "protection_level": "dangerous",
+      "description": "Allows read-only access to phone state, including phone number, cellular network info, active call status, and device identifiers (IMEI/IMSI on older OS).",
+      "privacy_risk": "Can uniquely fingerprint devices across app re-installs, track SIM card replacements, and detect active phone calls.",
+      "abuse_scenarios": [
+        "Persistent cross-app tracking without user consent; call detection for targeted interruptions."
+      ],
+      "privacy_keywords": ["phone state", "device status", "call state", "cellular network", "phone identity"],
+      "severity_score": 7.5,
+      "remediation": "Use READ_PHONE_NUMBERS if only phone number is needed, or rely on TelecomManager without sensitive identifiers."
+    },
+    "android.permission.CALL_PHONE": {
+      "short_name": "CALL_PHONE",
+      "group": "Phone",
+      "protection_level": "dangerous",
+      "description": "Allows an application to initiate a phone call without going through the Dialer user interface for the user to confirm the call.",
+      "privacy_risk": "Can initiate unauthorized calls to premium-rate numbers resulting in immediate monetary loss.",
+      "abuse_scenarios": [
+        "Toll fraud malware dialing expensive foreign or premium rate lines silently in the background."
+      ],
+      "privacy_keywords": ["call phone", "place calls", "dial", "telephone call"],
+      "severity_score": 8.0,
+      "remediation": "Use ACTION_DIAL intent instead of ACTION_CALL, allowing the user to review and press the call button."
+    },
+    "android.permission.READ_SMS": {
+      "short_name": "READ_SMS",
+      "group": "SMS",
+      "protection_level": "dangerous",
+      "description": "Allows an application to read SMS messages stored on the phone or SIM card.",
+      "privacy_risk": "Directly compromises two-factor authentication (2FA) SMS codes, banking transaction OTPs, and confidential personal conversations.",
+      "abuse_scenarios": [
+        "Banking trojans intercepting OTP verification codes to drain victim accounts.",
+        "Smishing surveillance."
+      ],
+      "privacy_keywords": ["sms", "text message", "otp", "verification code", "inbox"],
+      "severity_score": 9.5,
+      "remediation": "Use SMS Retriever API or SMS User Consent API for automated OTP entry without requiring READ_SMS permission."
+    },
+    "android.permission.RECEIVE_SMS": {
+      "short_name": "RECEIVE_SMS",
+      "group": "SMS",
+      "protection_level": "dangerous",
+      "description": "Allows an application to receive incoming SMS messages.",
+      "privacy_risk": "Real-time interception of authentication tokens and private communications before user even reads them.",
+      "abuse_scenarios": [
+        "Banking trojans stealthily suppressing OTP notifications and completing financial fraud."
+      ],
+      "privacy_keywords": ["receive sms", "incoming message", "sms verification"],
+      "severity_score": 9.5,
+      "remediation": "Use the Google Play Services SMS Retriever API for zero-permission OTP verification."
+    },
+    "android.permission.SEND_SMS": {
+      "short_name": "SEND_SMS",
+      "group": "SMS",
+      "protection_level": "dangerous",
+      "description": "Allows an application to send SMS messages directly without user intervention.",
+      "privacy_risk": "Financial theft through outbound premium-rate SMS messages and spreading malware worms to contact lists.",
+      "abuse_scenarios": [
+        "Premium SMS fraud malware generating thousands of dollars in victim telecom billing."
+      ],
+      "privacy_keywords": ["send sms", "outbound text", "send message"],
+      "severity_score": 9.0,
+      "remediation": "Use ACTION_SENDTO intent with 'smsto:' URI scheme to delegate message sending to user's preferred SMS app."
+    },
+    "android.permission.READ_CALENDAR": {
+      "short_name": "READ_CALENDAR",
+      "group": "Calendar",
+      "protection_level": "dangerous",
+      "description": "Allows an application to read the user's calendar events and meeting details.",
+      "privacy_risk": "Exposes confidential business meetings, personal doctors' appointments, flights, and attendee lists.",
+      "abuse_scenarios": [
+        "Corporate espionage, profiling schedules, and social engineering preparation."
+      ],
+      "privacy_keywords": ["calendar", "schedule", "events", "meetings", "appointments"],
+      "severity_score": 7.0,
+      "remediation": "Use CalendarContract intents for event viewing or editing rather than demanding raw read permission."
+    },
+    "android.permission.WRITE_CALENDAR": {
+      "short_name": "WRITE_CALENDAR",
+      "group": "Calendar",
+      "protection_level": "dangerous",
+      "description": "Allows an application to create, edit, or delete calendar events without notifying the user.",
+      "privacy_risk": "Phishing event injection into user calendars and deletion of critical schedule records.",
+      "abuse_scenarios": [
+        "Calendar spam phishing attacks injecting scam links into default notifications."
+      ],
+      "privacy_keywords": ["calendar", "add event", "create meeting"],
+      "severity_score": 6.5,
+      "remediation": "Use ACTION_INSERT with Events.CONTENT_URI to allow the user to review new events before adding."
+    },
+    "android.permission.READ_EXTERNAL_STORAGE": {
+      "short_name": "READ_EXTERNAL_STORAGE",
+      "group": "Storage",
+      "protection_level": "dangerous",
+      "description": "Allows an application to read from external shared storage (photos, documents, downloads).",
+      "privacy_risk": "Mass exfiltration of personal photos, financial tax documents, chat backups, and private downloads.",
+      "abuse_scenarios": [
+        "Data harvesting malware scanning SD card and shared downloads for identity documents and private photos."
+      ],
+      "privacy_keywords": ["storage", "files", "documents", "sd card", "photos", "downloads"],
+      "severity_score": 8.0,
+      "remediation": "Adopt Scoped Storage and Storage Access Framework (SAF) or Android Photo Picker on Android 10+."
+    },
+    "android.permission.WRITE_EXTERNAL_STORAGE": {
+      "short_name": "WRITE_EXTERNAL_STORAGE",
+      "group": "Storage",
+      "protection_level": "dangerous",
+      "description": "Allows an application to write or modify files on external shared storage.",
+      "privacy_risk": "Overwriting, corrupting, or encrypting user files across the entire shared memory space.",
+      "abuse_scenarios": [
+        "Ransomware encrypting user media, downloading malicious secondary payloads into shared folders."
+      ],
+      "privacy_keywords": ["storage", "save files", "write files", "download"],
+      "severity_score": 8.0,
+      "remediation": "Use app-specific internal or external directories (context.getExternalFilesDir()) which require zero permissions."
+    },
+    "android.permission.BODY_SENSORS": {
+      "short_name": "BODY_SENSORS",
+      "group": "Sensors",
+      "protection_level": "dangerous",
+      "description": "Allows an application to access data from sensors that monitor physical conditions, such as heart rate monitors.",
+      "privacy_risk": "Direct extraction of intimate biometric and health conditions (cardiac anomalies, physical exertion).",
+      "abuse_scenarios": [
+        "Selling sensitive user health indicators to insurers and profiling health vulnerabilities."
+      ],
+      "privacy_keywords": ["health", "biometric", "heart rate", "sensor", "fitness", "vital signs"],
+      "severity_score": 8.0,
+      "remediation": "Explicitly explain healthcare necessity and ensure compliance with medical privacy frameworks (HIPAA/GDPR Health)."
+    },
+    "android.permission.ACTIVITY_RECOGNITION": {
+      "short_name": "ACTIVITY_RECOGNITION",
+      "group": "Sensors",
+      "protection_level": "dangerous",
+      "description": "Allows an application to recognize physical activities such as walking, riding a bicycle, driving a car, or standing still.",
+      "privacy_risk": "Detailed life habit profiling, commuting mode analysis, and continuous behavioral telemetry.",
+      "abuse_scenarios": [
+        "Ad profiling based on lifestyle routines and real-time transit state."
+      ],
+      "privacy_keywords": ["fitness", "activity", "steps", "walking", "running", "biking"],
+      "severity_score": 6.5,
+      "remediation": "Only request if app offers fitness or step counting core functionality."
+    },
+    "android.permission.POST_NOTIFICATIONS": {
+      "short_name": "POST_NOTIFICATIONS",
+      "group": "Notifications",
+      "protection_level": "dangerous",
+      "description": "Allows an app to post notifications (Android 13+).",
+      "privacy_risk": "Spam notifications, social engineering scams, and deceptive system warnings.",
+      "abuse_scenarios": [
+        "Deceptive scam popups mimicking Google system alerts to trick users into installing adware."
+      ],
+      "privacy_keywords": ["notifications", "push alerts", "reminders", "messages"],
+      "severity_score": 4.5,
+      "remediation": "Request runtime permission only when user enables alerts in app settings."
+    },
+    "android.permission.SYSTEM_ALERT_WINDOW": {
+      "short_name": "SYSTEM_ALERT_WINDOW",
+      "group": "System Overlay",
+      "protection_level": "special",
+      "description": "Allows an app to create windows shown on top of all other applications (display overlays).",
+      "privacy_risk": "Enables tapjacking attacks, overlay phishing (drawing fake login boxes over banking apps), and click-fraud.",
+      "abuse_scenarios": [
+        "Banking trojans cloaking authentic bank apps with invisible or identical phishing input forms to capture passwords."
+      ],
+      "privacy_keywords": ["display over other apps", "floating window", "overlay", "screen drawer"],
+      "severity_score": 9.5,
+      "remediation": "Avoid overlay permissions. Use picture-in-picture (PiP) mode for video players or bubbles for messaging."
+    },
+    "android.permission.REQUEST_INSTALL_PACKAGES": {
+      "short_name": "REQUEST_INSTALL_PACKAGES",
+      "group": "App Installation",
+      "protection_level": "special",
+      "description": "Allows an application to request installation of packages outside official app stores.",
+      "privacy_risk": "Dropper malware mechanism: downloads and prompts the installation of hidden secondary malicious APKs.",
+      "abuse_scenarios": [
+        "Dropper trojans masquerading as benign utilities to download banking trojans or ransomware payloads."
+      ],
+      "privacy_keywords": ["install apps", "unknown sources", "download apk", "update app"],
+      "severity_score": 9.0,
+      "remediation": "Distribute application updates strictly via official app stores (Google Play) rather than self-updating APK droppers."
+    },
+    "android.permission.PACKAGE_USAGE_STATS": {
+      "short_name": "PACKAGE_USAGE_STATS",
+      "group": "System Monitoring",
+      "protection_level": "special",
+      "description": "Allows an app to collect component usage statistics, identifying which apps the user opens, how often, and for how long.",
+      "privacy_risk": "Total visibility into user app habits (dating apps, cryptocurrency wallets, health trackers, secure messengers).",
+      "abuse_scenarios": [
+        "Banking trojans detecting when a specific bank app is launched to trigger an overlay attack at the exact millisecond."
+      ],
+      "privacy_keywords": ["usage access", "app usage", "screen time", "device monitoring"],
+      "severity_score": 9.0,
+      "remediation": "Restrict use to digital wellbeing or enterprise device management tools."
+    },
+    "android.permission.BIND_ACCESSIBILITY_SERVICE": {
+      "short_name": "BIND_ACCESSIBILITY_SERVICE",
+      "group": "Accessibility",
+      "protection_level": "signature/special",
+      "description": "Must be required by an AccessibilityService to ensure that only the system can bind to it.",
+      "privacy_risk": "Highest risk vector on Android: grants complete read and write control over screen contents, keylogging, and auto-clicking.",
+      "abuse_scenarios": [
+        "Advanced Android malware abusing Accessibility to read 2FA codes, automate fund transfers, and disable antivirus software."
+      ],
+      "privacy_keywords": ["accessibility", "screen reader", "assistive", "automation"],
+      "severity_score": 10.0,
+      "remediation": "Accessibility services should solely be built for genuine assistive technologies for users with disabilities."
+    },
+    "android.permission.INTERNET": {
+      "short_name": "INTERNET",
+      "group": "Network",
+      "protection_level": "normal",
+      "description": "Allows applications to open network sockets and send/receive data over the internet.",
+      "privacy_risk": "Exfiltration highway. When paired with sensitive permissions (camera, location, contacts), enables remote data leakage.",
+      "abuse_scenarios": [
+        "Exfiltration conduit for harvested personal data to remote Command & Control (C2) servers."
+      ],
+      "privacy_keywords": ["internet", "network", "online", "cloud", "servers", "upload", "download"],
+      "severity_score": 5.0,
+      "remediation": "Use HTTPS with certificate pinning (network_security_config.xml) to safeguard all transmitted telemetry."
+    },
+    "android.permission.ACCESS_NETWORK_STATE": {
+      "short_name": "ACCESS_NETWORK_STATE",
+      "group": "Network",
+      "protection_level": "normal",
+      "description": "Allows applications to access information about networks (e.g. Wi-Fi or cellular connected).",
+      "privacy_risk": "Allows fingerprinting connectivity state and scheduling large exfiltrations strictly over Wi-Fi.",
+      "abuse_scenarios": [
+        "Silent background upload scheduling when user is connected to unmetered Wi-Fi."
+      ],
+      "privacy_keywords": ["network state", "connection status", "wifi status"],
+      "severity_score": 2.0,
+      "remediation": "Standard utility permission; ensure no private data is collected alongside network status."
+    },
+    "android.permission.RECEIVE_BOOT_COMPLETED": {
+      "short_name": "RECEIVE_BOOT_COMPLETED",
+      "group": "System",
+      "protection_level": "normal",
+      "description": "Allows an application to receive the ACTION_BOOT_COMPLETED broadcast sent after the system finishes booting.",
+      "privacy_risk": "Enables persistence across device reboots; spyware can start running immediately without user launching the app.",
+      "abuse_scenarios": [
+        "Malware auto-start persistence to re-establish C2 channels immediately on device power-up."
+      ],
+      "privacy_keywords": ["boot", "startup", "restart", "run at startup"],
+      "severity_score": 5.5,
+      "remediation": "Use WorkManager for periodic background jobs instead of launch-on-boot receivers whenever possible."
+    },
+    "android.permission.VIBRATE": {
+      "short_name": "VIBRATE",
+      "group": "Device Features",
+      "protection_level": "normal",
+      "description": "Allows access to the vibrator.",
+      "privacy_risk": "Low risk. Primarily used for tactile feedback and notifications.",
+      "abuse_scenarios": [
+        "Annoying adware triggering constant vibration to force user attention."
+      ],
+      "privacy_keywords": ["vibrate", "haptic"],
+      "severity_score": 1.0,
+      "remediation": "Standard benign utility permission."
+    },
+    "android.permission.WAKE_LOCK": {
+      "short_name": "WAKE_LOCK",
+      "group": "Power",
+      "protection_level": "normal",
+      "description": "Allows using PowerManager WakeLocks to keep processor from sleeping or screen from dimming.",
+      "privacy_risk": "Battery drain and keeping the device awake for continuous covert telemetry or cryptomining.",
+      "abuse_scenarios": [
+        "Background cryptocurrency mining or constant microphone recording while screen appears dark."
+      ],
+      "privacy_keywords": ["wake lock", "prevent sleep", "keep awake"],
+      "severity_score": 4.0,
+      "remediation": "Avoid manual wake locks; use WorkManager or JobScheduler."
+    }
+  },
+  "combo_rules": [
+    {
+      "id": "surveillance_combo",
+      "name": "Covert Audiovisual Surveillance & Exfiltration",
+      "required_permissions": ["android.permission.RECORD_AUDIO", "android.permission.CAMERA", "android.permission.INTERNET"],
+      "severity": "CRITICAL",
+      "risk_penalty": 25,
+      "explanation": "App has simultaneous access to the microphone, camera, and internet. This combination creates severe spyware capability to silently record surroundings, take photos, and immediately exfiltrate them to remote servers."
+    },
+    {
+      "id": "location_tracking_combo",
+      "name": "Persistent 24/7 Geolocation Tracking",
+      "required_permissions": ["android.permission.ACCESS_FINE_LOCATION", "android.permission.ACCESS_BACKGROUND_LOCATION", "android.permission.INTERNET"],
+      "severity": "CRITICAL",
+      "risk_penalty": 25,
+      "explanation": "App can track the user's high-precision location continuously even when the app is closed, and beam real-time coordinates over the internet. Characteristic of commercial stalkerware and invasive ad-trackers."
+    },
+    {
+      "id": "banking_sms_interception",
+      "name": "Financial OTP & 2FA Interception",
+      "required_permissions": ["android.permission.READ_SMS", "android.permission.INTERNET"],
+      "severity": "CRITICAL",
+      "risk_penalty": 20,
+      "explanation": "App can read incoming SMS messages and transmit data over the network. This pattern is commonly exploited by banking trojans to intercept one-time passwords (OTPs) and bypass two-factor authentication."
+    },
+    {
+      "id": "social_graph_harvesting",
+      "name": "Social Graph & Contact Scraping",
+      "required_permissions": ["android.permission.READ_CONTACTS", "android.permission.INTERNET"],
+      "severity": "HIGH",
+      "risk_penalty": 15,
+      "explanation": "App can harvest the user's full phone book and upload it to external databases. This exposes not only the device owner but also contacts, friends, and colleagues without their awareness."
+    },
+    {
+      "id": "overlay_phishing",
+      "name": "Deceptive Screen Overlay & Tapjacking",
+      "required_permissions": ["android.permission.SYSTEM_ALERT_WINDOW", "android.permission.INTERNET"],
+      "severity": "HIGH",
+      "risk_penalty": 15,
+      "explanation": "App can draw overlays on top of any other app while communicating with remote servers. Attackers use this to display counterfeit credential-prompt dialogs over authentic banking or email apps."
+    },
+    {
+      "id": "file_tampering_ransomware",
+      "name": "Shared Storage Exfiltration & Tampering",
+      "required_permissions": ["android.permission.WRITE_EXTERNAL_STORAGE", "android.permission.INTERNET"],
+      "severity": "MEDIUM",
+      "risk_penalty": 10,
+      "explanation": "App can modify or wipe shared files and sync them remotely. Untrusted apps with this permission can inspect downloaded documents or stage ransomware-style payloads."
+    },
+    {
+      "id": "reboot_persistence",
+      "name": "Auto-Start Persistence & Surveillance",
+      "required_permissions": ["android.permission.RECEIVE_BOOT_COMPLETED", "android.permission.INTERNET"],
+      "severity": "MEDIUM",
+      "risk_penalty": 8,
+      "explanation": "App registers to start running automatically as soon as the phone boots, enabling persistent unprompted background operations."
+    }
+  ]
+}

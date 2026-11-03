@@ -1,0 +1,13 @@
+Apex Vault Mobile Banking Privacy Policy
+
+1. Introduction
+Apex Vault is committed to protecting your confidential financial records and mobile privacy. This policy outlines how our mobile banking client handles your data.
+
+2. Information We Collect
+- Camera & Imagery: When you use the Remote Check Deposit feature or scan QR payment codes, we request camera access solely to capture check images and barcode symbols. No audio or unprompted video is recorded.
+- Network Data & Device Info: We collect cellular network status and encrypted device telemetry to detect fraudulent sessions and authenticate your connection with our banking core.
+- Approximate Location: With your consent, we use coarse location to identify nearby ATMs, bank branches, and verify that transactions originate from expected regions.
+- Push Notifications: We send notifications to alert you of account activity, security alerts, and transfer confirmations.
+
+3. Security & Non-Disclosure
+We do not sell, rent, or trade your personal information. All communications are protected using TLS 1.3 encryption with certificate pinning.
