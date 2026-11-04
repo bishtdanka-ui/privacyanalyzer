@@ -50,7 +50,7 @@ def main():
         st.caption("Explainable Security PS02")
         st.divider()
 
-        st.markdown(f"**Analyst:** `{user.get('username')}`")
+        st.markdown(f"**Analyst:** `{user.get('email')}`")
         role_label = "👑 Administrator" if admin_access else "🔬 Security Analyst"
         st.markdown(f"**Role:** {role_label}")
         st.divider()

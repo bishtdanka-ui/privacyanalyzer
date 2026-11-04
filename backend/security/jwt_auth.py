@@ -5,7 +5,7 @@ from backend.config import settings
 
 def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
     """
-    Generate a cryptographically signed JWT access token.
+    Generate a cryptographically signed short-lived JWT access token.
     """
     to_encode = data.copy()
     now = datetime.now(timezone.utc)
@@ -27,4 +27,3 @@ def decode_access_token(token: str) -> Optional[Dict[str, Any]]:
         return payload
     except jwt.PyJWTError:
         return None
-

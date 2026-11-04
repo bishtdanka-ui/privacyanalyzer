@@ -80,7 +80,7 @@ def render_admin_view():
         success_l, logs = api_client.get_admin_audit_logs(50, token)
         if success_l and logs:
             df_logs = pd.DataFrame(logs)
-            display_cols = ["id", "action", "username", "target_type", "target_id", "ip_address", "created_at"]
+            display_cols = ["id", "action", "username", "resource_type", "resource_id", "ip_address", "created_at"]
             st.dataframe(df_logs[display_cols], use_container_width=True, hide_index=True)
         else:
             st.info("No audit logs available.")

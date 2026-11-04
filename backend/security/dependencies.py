@@ -12,7 +12,8 @@ def get_current_user(
     db: Session = Depends(get_db)
 ) -> User:
     """
-    Validate Authorization Bearer JWT token and resolve current user.
+    Validate Authorization Bearer JWT token and resolve current authenticated user.
+    Never trusts client-supplied user identifiers.
     """
     if not credentials:
         raise HTTPException(
@@ -26,7 +27,7 @@ def get_current_user(
     if not payload:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired authentication token.",
+            detail="Invalid or expired access token.",
             headers={"WWW-Authenticate": "Bearer"},
         )
     
@@ -41,8 +42,8 @@ def get_current_user(
     user = db.query(User).filter(User.id == int(user_id)).first()
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User associated with token not found.",
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User account associated with this token no longer exists.",
         )
     
     return user
@@ -54,18 +55,17 @@ def get_current_active_user(current_user: User = Depends(get_current_user)) -> U
     if not current_user.is_active:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="User account has been deactivated.",
+            detail="User account has been deactivated. Contact an administrator.",
         )
     return current_user
 
 def get_current_admin(current_user: User = Depends(get_current_active_user)) -> User:
     """
-    Ensure the active user possesses the 'admin' role.
+    Role-Based Access Control (RBAC): Ensure the active user possesses the 'admin' role.
     """
     if current_user.role != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Administrator privileges required.",
+            detail="Access forbidden: Administrator privileges required.",
         )
     return current_user
-

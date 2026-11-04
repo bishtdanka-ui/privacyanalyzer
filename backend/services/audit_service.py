@@ -6,9 +6,8 @@ def log_audit_event(
     db: Session,
     action: str,
     user_id: Optional[int] = None,
-    target_type: Optional[str] = None,
-    target_id: Optional[str] = None,
-    details: Optional[Dict[str, Any]] = None,
+    resource_type: Optional[str] = None,
+    resource_id: Optional[str] = None,
     ip_address: Optional[str] = None
 ) -> AuditLog:
     """
@@ -17,13 +16,11 @@ def log_audit_event(
     entry = AuditLog(
         user_id=user_id,
         action=action,
-        target_type=target_type,
-        target_id=str(target_id) if target_id else None,
-        details=details or {},
+        resource_type=resource_type,
+        resource_id=str(resource_id) if resource_id else None,
         ip_address=ip_address
     )
     db.add(entry)
     db.commit()
     db.refresh(entry)
     return entry
-

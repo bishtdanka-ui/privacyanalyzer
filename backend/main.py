@@ -26,11 +26,11 @@ def init_db_and_seed():
             logger.info(f"Seeding default administrator account: {settings.DEFAULT_ADMIN_EMAIL}")
             admin_user = User(
                 email=settings.DEFAULT_ADMIN_EMAIL.lower(),
-                username="admin",
                 full_name="System Administrator",
-                hashed_password=hash_password(settings.DEFAULT_ADMIN_PASSWORD),
+                password_hash=hash_password(settings.DEFAULT_ADMIN_PASSWORD),
                 role="admin",
-                is_active=True
+                is_active=True,
+                email_verified=True
             )
             db.add(admin_user)
             db.commit()

@@ -24,3 +24,4 @@ class Report(Base):
 
     def __repr__(self):
         return f"<Report id={self.id} analysis_id={self.analysis_id} format='{self.report_format}'>"
+

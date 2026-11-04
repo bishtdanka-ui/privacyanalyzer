@@ -22,3 +22,4 @@ class PolicyExcerpt(Base):
 
     def __repr__(self):
         return f"<PolicyExcerpt id={self.id} domain='{self.domain}' type='{self.excerpt_type}'>"
+

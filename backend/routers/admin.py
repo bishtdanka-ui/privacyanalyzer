@@ -51,9 +51,8 @@ def update_user_status(
         db,
         action="ADMIN_UPDATE_USER",
         user_id=admin_user.id,
-        target_type="USER",
-        target_id=str(target.id),
-        details={"new_role": target.role, "new_active": target.is_active}
+        resource_type="USER",
+        resource_id=str(target.id)
     )
 
     return target
@@ -95,7 +94,7 @@ def get_system_stats(
     recent_events = [
         {
             "action": a.action,
-            "target": f"{a.target_type}:{a.target_id}",
+            "target": f"{a.resource_type}:{a.resource_id}",
             "ip": a.ip_address,
             "timestamp": a.created_at.strftime("%Y-%m-%d %H:%M")
         }
@@ -123,15 +122,14 @@ def get_audit_logs(
     entries = db.query(AuditLog).order_by(AuditLog.created_at.desc()).limit(limit).all()
     results = []
     for e in entries:
-        username = e.user.username if e.user else "Anonymous/System"
+        username = e.user.email if e.user else "Anonymous/System"
         results.append(AuditLogResponse(
             id=e.id,
             user_id=e.user_id,
             username=username,
             action=e.action,
-            target_type=e.target_type,
-            target_id=e.target_id,
-            details=e.details,
+            resource_type=e.resource_type,
+            resource_id=e.resource_id,
             ip_address=e.ip_address,
             created_at=e.created_at
         ))

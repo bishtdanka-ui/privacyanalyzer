@@ -14,35 +14,62 @@ class APIClient:
             headers["Authorization"] = f"Bearer {token}"
         return headers
 
-    def register(self, email: str, username: str, full_name: str, password: str) -> Tuple[bool, Any]:
+    def register(self, email: str, full_name: str, password: str, terms_accepted: bool = True) -> Tuple[bool, Any]:
         url = f"{self.base_url}/auth/register"
         payload = {
             "email": email,
-            "username": username,
             "full_name": full_name or None,
-            "password": password
+            "password": password,
+            "terms_accepted": terms_accepted
         }
         try:
             resp = requests.post(url, json=payload, timeout=10)
             if resp.status_code == 201:
                 return True, resp.json()
-            return False, resp.json().get("detail", "Registration failed.")
+            err_msg = resp.json().get("detail", "Registration failed.")
+            if isinstance(err_msg, list) and len(err_msg) > 0:
+                err_msg = err_msg[0].get("msg", str(err_msg))
+            return False, err_msg
         except Exception as e:
             return False, f"Network connection error: {str(e)}"
 
-    def login(self, username_or_email: str, password: str) -> Tuple[bool, Any]:
+    def login(self, email: str, password: str, remember_me: bool = False) -> Tuple[bool, Any]:
         url = f"{self.base_url}/auth/login"
         payload = {
-            "username_or_email": username_or_email,
-            "password": password
+            "email": email,
+            "password": password,
+            "remember_me": remember_me
         }
         try:
             resp = requests.post(url, json=payload, timeout=10)
             if resp.status_code == 200:
                 return True, resp.json()
-            return False, resp.json().get("detail", "Invalid username or password.")
+            err_msg = resp.json().get("detail", "Invalid email or password.")
+            return False, err_msg
         except Exception as e:
             return False, f"Connection failed. Ensure backend is running at {self.base_url}."
+
+    def refresh_access_token(self, refresh_token: str) -> Tuple[bool, Any]:
+        url = f"{self.base_url}/auth/refresh"
+        payload = {"refresh_token": refresh_token}
+        try:
+            resp = requests.post(url, json=payload, timeout=10)
+            if resp.status_code == 200:
+                return True, resp.json()
+            return False, resp.json().get("detail", "Session refresh failed.")
+        except Exception as e:
+            return False, str(e)
+
+    def logout(self, token: str, refresh_token: Optional[str] = None) -> Tuple[bool, Any]:
+        url = f"{self.base_url}/auth/logout"
+        payload = {"refresh_token": refresh_token} if refresh_token else {}
+        try:
+            resp = requests.post(url, json=payload, headers=self._headers(token), timeout=10)
+            if resp.status_code == 200:
+                return True, resp.json()
+            return False, "Logout failed."
+        except Exception as e:
+            return False, str(e)
 
     def get_me(self, token: str) -> Tuple[bool, Any]:
         url = f"{self.base_url}/auth/me"

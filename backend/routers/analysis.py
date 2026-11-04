@@ -174,13 +174,8 @@ def _process_and_save_analysis(
         db,
         action="RUN_ANALYSIS",
         user_id=user.id,
-        target_type="ANALYSIS",
-        target_id=str(analysis.id),
-        details={
-            "package_name": analysis.package_name,
-            "risk_score": analysis.risk_score,
-            "risk_level": analysis.risk_level
-        },
+        resource_type="ANALYSIS",
+        resource_id=str(analysis.id),
         ip_address=client_ip
     )
 

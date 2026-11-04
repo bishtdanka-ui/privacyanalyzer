@@ -15,16 +15,15 @@ def render_profile_view():
     with col1:
         st.subheader("Account Details")
         with st.form("profile_update_form"):
-            st.text_input("Username", value=user.get("username"), disabled=True)
+            st.text_input("Primary Email", value=user.get("email"), disabled=True)
             new_name = st.text_input("Full Name", value=user.get("full_name") or "")
-            new_email = st.text_input("Email Address", value=user.get("email") or "")
             role_label = "Administrator (Full Access)" if user.get("role") == "admin" else "Security Analyst (Standard Access)"
             st.text_input("Role & Privileges", value=role_label, disabled=True)
             
             submit_profile = st.form_submit_button("Update Profile Information", type="primary", use_container_width=True)
             if submit_profile:
                 with st.spinner("Updating profile in database..."):
-                    success, resp = api_client.update_profile(new_name, new_email, token)
+                    success, resp = api_client.update_profile(new_name, None, token)
                     if success:
                         st.session_state["user"] = resp
                         st.success("Profile updated successfully!")
@@ -72,3 +71,4 @@ def render_profile_view():
             st.dataframe(df_sessions, use_container_width=True, hide_index=True)
         else:
             st.info("No recorded sessions found.")
+

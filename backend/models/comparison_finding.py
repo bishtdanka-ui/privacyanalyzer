@@ -25,3 +25,4 @@ class ComparisonFinding(Base):
 
     def __repr__(self):
         return f"<ComparisonFinding id={self.id} type='{self.finding_type}' sev='{self.severity}'>"
+
