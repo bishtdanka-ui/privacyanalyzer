@@ -32,8 +32,21 @@ class Settings:
     IS_VERCEL: bool = os.getenv("VERCEL") == "1"
 
     # Database Configuration (PostgreSQL / SQLite)
-    _default_db = "sqlite:////tmp/privacy_analyzer.db" if IS_VERCEL else f"sqlite:///{BASE_DIR / 'privacy_analyzer.db'}"
-    DATABASE_URL: str = os.getenv("DATABASE_URL", _default_db)
+    _raw_db = os.getenv("DATABASE_URL", "").strip()
+    if IS_VERCEL:
+        # In Vercel serverless: read-only root requires /tmp for SQLite, and postgresql:// for Postgres
+        if not _raw_db or "sqlite" in _raw_db and "/tmp" not in _raw_db:
+            _db_url = "sqlite:////tmp/privacy_analyzer.db"
+        elif _raw_db.startswith("postgres://"):
+            _db_url = _raw_db.replace("postgres://", "postgresql://", 1)
+        else:
+            _db_url = _raw_db
+    else:
+        _db_url = _raw_db if _raw_db else f"sqlite:///{BASE_DIR / 'privacy_analyzer.db'}"
+        if _db_url.startswith("postgres://"):
+            _db_url = _db_url.replace("postgres://", "postgresql://", 1)
+    
+    DATABASE_URL: str = _db_url
     
     # File Upload & Payload Size Limits
     MAX_UPLOAD_SIZE_MB: int = int(os.getenv("MAX_UPLOAD_SIZE_MB", "5"))
@@ -51,10 +64,16 @@ class Settings:
     CORS_ORIGINS: str = os.getenv("CORS_ORIGINS", "*")
     
     # Paths & Knowledge Base (Use /tmp for writable paths in serverless environments)
-    _default_reports = Path("/tmp/reports") if IS_VERCEL else (BASE_DIR / "reports")
-    _default_uploads = Path("/tmp/uploads") if IS_VERCEL else (BASE_DIR / "uploads")
-    REPORT_OUTPUT_DIR: Path = Path(os.getenv("REPORT_OUTPUT_DIR", str(_default_reports)))
-    UPLOAD_TEMP_DIR: Path = Path(os.getenv("UPLOAD_TEMP_DIR", str(_default_uploads)))
+    if IS_VERCEL:
+        _default_reports = Path("/tmp/reports")
+        _default_uploads = Path("/tmp/uploads")
+        _raw_reports = os.getenv("REPORT_OUTPUT_DIR", "").strip()
+        _raw_uploads = os.getenv("UPLOAD_TEMP_DIR", "").strip()
+        REPORT_OUTPUT_DIR: Path = Path(_raw_reports) if (_raw_reports and _raw_reports.startswith("/tmp")) else _default_reports
+        UPLOAD_TEMP_DIR: Path = Path(_raw_uploads) if (_raw_uploads and _raw_uploads.startswith("/tmp")) else _default_uploads
+    else:
+        REPORT_OUTPUT_DIR: Path = Path(os.getenv("REPORT_OUTPUT_DIR", str(BASE_DIR / "reports")))
+        UPLOAD_TEMP_DIR: Path = Path(os.getenv("UPLOAD_TEMP_DIR", str(BASE_DIR / "uploads")))
     KB_PATH: Path = BASE_DIR / "knowledge_base" / "android_permissions.json"
 
     def __init__(self):

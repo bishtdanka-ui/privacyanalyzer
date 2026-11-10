@@ -25,30 +25,33 @@ def init_db_and_seed():
     """
     Initialize database schema and seed default administrator account if needed.
     """
-    logger.info("Verifying database schema...")
-    Base.metadata.create_all(bind=engine)
-    
-    db = SessionLocal()
     try:
-        admin_user = db.query(User).filter(User.email == settings.DEFAULT_ADMIN_EMAIL.lower()).first()
-        if not admin_user:
-            logger.info(f"Seeding default administrator account: {settings.DEFAULT_ADMIN_EMAIL}")
-            admin_user = User(
-                email=settings.DEFAULT_ADMIN_EMAIL.lower(),
-                full_name="System Administrator",
-                password_hash=hash_password(settings.DEFAULT_ADMIN_PASSWORD),
-                role="admin",
-                is_active=True,
-                email_verified=True
-            )
-            db.add(admin_user)
-            db.commit()
-            logger.info("Administrator account provisioned successfully.")
+        logger.info("Verifying database schema...")
+        Base.metadata.create_all(bind=engine)
+        
+        db = SessionLocal()
+        try:
+            admin_user = db.query(User).filter(User.email == settings.DEFAULT_ADMIN_EMAIL.lower()).first()
+            if not admin_user:
+                logger.info(f"Seeding default administrator account: {settings.DEFAULT_ADMIN_EMAIL}")
+                admin_user = User(
+                    email=settings.DEFAULT_ADMIN_EMAIL.lower(),
+                    full_name="System Administrator",
+                    password_hash=hash_password(settings.DEFAULT_ADMIN_PASSWORD),
+                    role="admin",
+                    is_active=True,
+                    email_verified=True
+                )
+                db.add(admin_user)
+                db.commit()
+                logger.info("Administrator account provisioned successfully.")
+        except Exception as e:
+            logger.error(f"Error during admin account provisioning: {e}")
+            db.rollback()
+        finally:
+            db.close()
     except Exception as e:
-        logger.error(f"Error during database initialization/seeding: {e}")
-        db.rollback()
-    finally:
-        db.close()
+        logger.error(f"Database initialization deferred or encountered error: {e}")
 
 
 @asynccontextmanager
@@ -57,26 +60,32 @@ async def lifespan(app: FastAPI):
     Proper startup and graceful shutdown handling.
     """
     # --- STARTUP ---
-    logger.info(f"Starting {settings.PROJECT_NAME} (v{settings.APP_VERSION}) in [{settings.ENV.upper()}] mode")
-    init_db_and_seed()
-    
-    # Pre-check knowledge base entries
-    entry_count = permission_lookup_service.get_entry_count()
-    logger.info(f"Knowledge Base active with {entry_count} verified Android permissions.")
-    
-    # Verify report output directory write permissions
-    storage_writable = os.access(settings.REPORT_OUTPUT_DIR, os.W_OK)
-    if storage_writable:
-        logger.info(f"Report storage verified at {settings.REPORT_OUTPUT_DIR.resolve()}")
-    else:
-        logger.warning(f"Report storage path {settings.REPORT_OUTPUT_DIR} is NOT writable!")
+    try:
+        logger.info(f"Starting {settings.PROJECT_NAME} (v{settings.APP_VERSION}) in [{settings.ENV.upper()}] mode")
+        init_db_and_seed()
+        
+        # Pre-check knowledge base entries
+        entry_count = permission_lookup_service.get_entry_count()
+        logger.info(f"Knowledge Base active with {entry_count} verified Android permissions.")
+        
+        # Verify report output directory write permissions
+        storage_writable = os.access(settings.REPORT_OUTPUT_DIR, os.W_OK)
+        if storage_writable:
+            logger.info(f"Report storage verified at {settings.REPORT_OUTPUT_DIR.resolve()}")
+        else:
+            logger.warning(f"Report storage path {settings.REPORT_OUTPUT_DIR} is NOT writable!")
+    except Exception as e:
+        logger.error(f"Lifespan startup encountered non-fatal error: {e}")
     
     yield
     
     # --- SHUTDOWN ---
-    logger.info("Gracefully shutting down PrivacyGuard API services...")
-    engine.dispose()
-    logger.info("Database connection pool disposed. Shutdown complete.")
+    try:
+        logger.info("Gracefully shutting down PrivacyGuard API services...")
+        engine.dispose()
+        logger.info("Database connection pool disposed. Shutdown complete.")
+    except Exception as e:
+        logger.error(f"Lifespan shutdown error: {e}")
 
 
 app = FastAPI(

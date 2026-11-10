@@ -58,7 +58,7 @@ cdn = false
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["backend*", "knowledge_base*"]
-exclude = ["tests*", "frontend*", "alembic*", "data*", "reports*", "uploads*", "venv*"]
+exclude = ["tests*", "frontend*", "alembic*", "data*", "reports*", "uploads*", "venv*", "api*"]
 namespaces = true
 
 [tool.setuptools.package-data]
