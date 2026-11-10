@@ -15,3 +15,17 @@ requires-python = ">=3.10"
 # =============================================================================
 [tool.vercel]
 entrypoint = "backend.main:app"
+
+# =============================================================================
+# SETUPTOOLS PACKAGE DISCOVERY CONFIGURATION
+# Explicitly discover and package only application modules required by backend,
+# preventing setuptools flat-layout auto-discovery errors with frontend/tests/data.
+# =============================================================================
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["backend*", "knowledge_base*"]
+exclude = ["tests*", "frontend*", "alembic*", "data*", "reports*", "uploads*", "venv*"]
+namespaces = true
+
+[tool.setuptools.package-data]
+knowledge_base = ["*.json"]
