@@ -28,8 +28,12 @@ class Settings:
     MAX_LOGIN_ATTEMPTS: int = int(os.getenv("MAX_LOGIN_ATTEMPTS", "5"))
     LOCKOUT_MINUTES: int = int(os.getenv("LOCKOUT_MINUTES", "15"))
     
+    # Environment Detection (e.g. Vercel Serverless)
+    IS_VERCEL: bool = os.getenv("VERCEL") == "1"
+
     # Database Configuration (PostgreSQL / SQLite)
-    DATABASE_URL: str = os.getenv("DATABASE_URL", f"sqlite:///{BASE_DIR / 'privacy_analyzer.db'}")
+    _default_db = "sqlite:////tmp/privacy_analyzer.db" if IS_VERCEL else f"sqlite:///{BASE_DIR / 'privacy_analyzer.db'}"
+    DATABASE_URL: str = os.getenv("DATABASE_URL", _default_db)
     
     # File Upload & Payload Size Limits
     MAX_UPLOAD_SIZE_MB: int = int(os.getenv("MAX_UPLOAD_SIZE_MB", "5"))
@@ -46,14 +50,22 @@ class Settings:
     FRONTEND_PORT: int = int(os.getenv("FRONTEND_PORT", "8501"))
     CORS_ORIGINS: str = os.getenv("CORS_ORIGINS", "*")
     
-    # Paths & Knowledge Base
-    REPORT_OUTPUT_DIR: Path = Path(os.getenv("REPORT_OUTPUT_DIR", str(BASE_DIR / "reports")))
-    UPLOAD_TEMP_DIR: Path = Path(os.getenv("UPLOAD_TEMP_DIR", str(BASE_DIR / "uploads")))
+    # Paths & Knowledge Base (Use /tmp for writable paths in serverless environments)
+    _default_reports = Path("/tmp/reports") if IS_VERCEL else (BASE_DIR / "reports")
+    _default_uploads = Path("/tmp/uploads") if IS_VERCEL else (BASE_DIR / "uploads")
+    REPORT_OUTPUT_DIR: Path = Path(os.getenv("REPORT_OUTPUT_DIR", str(_default_reports)))
+    UPLOAD_TEMP_DIR: Path = Path(os.getenv("UPLOAD_TEMP_DIR", str(_default_uploads)))
     KB_PATH: Path = BASE_DIR / "knowledge_base" / "android_permissions.json"
 
     def __init__(self):
-        self.REPORT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-        self.UPLOAD_TEMP_DIR.mkdir(parents=True, exist_ok=True)
+        try:
+            self.REPORT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            pass
+        try:
+            self.UPLOAD_TEMP_DIR.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            pass
         
         # Security validation for production
         if self.ENV == "production":
