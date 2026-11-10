@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PrivacyGuard — Explainable Application Privacy &amp; Permission Analyzer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #060913;
+      --bg-radial: radial-gradient(circle at 15% 15%, #0B132B 0%, #060913 100%);
+      --card-bg: rgba(13, 21, 39, 0.75);
+      --card-border: rgba(56, 189, 248, 0.2);
+      --card-hover-border: rgba(0, 212, 255, 0.45);
+      --primary-cyan: #00D4FF;
+      --primary-blue: #2563EB;
+      --primary-violet: #7C3AED;
+      --accent-purple: #A855F7;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --text-dim: #64748B;
+      --risk-critical-bg: rgba(239, 68, 68, 0.2);
+      --risk-critical-color: #F87171;
+      --risk-critical-border: rgba(239, 68, 68, 0.45);
+      --risk-high-bg: rgba(249, 115, 22, 0.2);
+      --risk-high-color: #FB923C;
+      --risk-high-border: rgba(249, 115, 22, 0.45);
+      --risk-medium-bg: rgba(234, 179, 8, 0.2);
+      --risk-medium-color: #FDE047;
+      --risk-medium-border: rgba(234, 179, 8, 0.45);
+      --risk-low-bg: rgba(16, 185, 129, 0.2);
+      --risk-low-color: #34D399;
+      --risk-low-border: rgba(16, 185, 129, 0.45);
+      --risk-unknown-bg: rgba(148, 163, 184, 0.2);
+      --risk-unknown-color: #CBD5E1;
+      --risk-unknown-border: rgba(148, 163, 184, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg-radial);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    code, pre, .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Top Navigation Bar */
+    header.cyber-navbar {
+      background: rgba(6, 9, 19, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-cyan) 0%, var(--primary-violet) 50%, var(--accent-purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-subtitle {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .auth-pill {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 9999px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .auth-pill strong {
+      color: var(--primary-cyan);
+    }
+
+    /* Navigation Tabs */
+    .tabs-bar {
+      background: rgba(13, 21, 39, 0.6);
+      border-bottom: 1px solid rgba(56, 189, 248, 0.12);
+      display: flex;
+      gap: 6px;
+      padding: 8px 24px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      border-radius: 8px;
+      color: var(--text-muted);
+      padding: 8px 16px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      border-color: rgba(56, 189, 248, 0.35);
+    }
+
+    .tab-btn.active {
+      background: rgba(37, 99, 235, 0.25);
+      border-color: var(--primary-cyan);
+      color: var(--primary-cyan);
+      box-shadow: 0 0 12px rgba(0, 212, 255, 0.2);
+    }
+
+    /* Main Container */
+    main.container {
+      max-width: 1300px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px 20px 48px;
+      flex: 1;
+    }
+
+    /* Cyber Card */
+    .cyber-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      margin-bottom: 24px;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .cyber-card:hover {
+      border-color: var(--card-hover-border);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.12);
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* KPI Metrics Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .metric-card {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--primary-cyan);
+    }
+
+    .metric-card.critical::before { background: #F87171; }
+    .metric-card.high::before { background: #FB923C; }
+    .metric-card.warning::before { background: #FDE047; }
+    .metric-card.success::before { background: #34D399; }
+
+    .metric-label {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 6px;
+    }
+
+    .metric-value {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      line-height: 1.2;
+    }
+
+    .metric-desc {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-top: 6px;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-critical {
+      background: var(--risk-critical-bg);
+      color: var(--risk-critical-color);
+      border: 1px solid var(--risk-critical-border);
+    }
+
+    .badge-high {
+      background: var(--risk-high-bg);
+      color: var(--risk-high-color);
+      border: 1px solid var(--risk-high-border);
+    }
+
+    .badge-medium {
+      background: var(--risk-medium-bg);
+      color: var(--risk-medium-color);
+      border: 1px solid var(--risk-medium-border);
+    }
+
+    .badge-low {
+      background: var(--risk-low-bg);
+      color: var(--risk-low-color);
+      border: 1px solid var(--risk-low-border);
+    }
+
+    .badge-unknown {
+      background: var(--risk-unknown-bg);
+      color: var(--risk-unknown-color);
+      border: 1px solid var(--risk-unknown-border);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0284C7 0%, var(--primary-blue) 50%, var(--primary-violet) 100%);
+      color: #FFFFFF;
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--primary-cyan) 0%, #3B82F6 50%, #8B5CF6 100%);
+      box-shadow: 0 6px 20px rgba(0, 212, 255, 0.45);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(30, 41, 59, 0.9);
+      border-color: var(--primary-cyan);
+      color: var(--primary-cyan);
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.78rem;
+    }
+
+    /* Form Inputs */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      background: rgba(10, 16, 31, 0.9);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      transition: border-color 0.2s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary-cyan);
+      box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+    }
+
+    textarea.form-control {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.45;
+      resize: vertical;
+      min-height: 140px;
+    }
+
+    /* Benchmark Cards */
+    .benchmarks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .benchmark-card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      border-radius: 10px;
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .benchmark-card:hover, .benchmark-card.selected {
+      border-color: var(--primary-cyan);
+      background: rgba(20, 32, 60, 0.8);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 212, 255, 0.2);
+    }
+
+    .bench-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--primary-cyan);
+      margin-bottom: 4px;
+    }
+
+    .bench-desc {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Tables */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      border-radius: 10px;
+      margin-top: 14px;
+    }
+
+    table.cyber-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+
+    table.cyber-table th {
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.5px;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    table.cyber-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+      vertical-align: middle;
+    }
+
+    table.cyber-table tr:hover td {
+      background: rgba(56, 189, 248, 0.04);
+    }
+
+    /* Progress bar */
+    .progress-bar-container {
+      width: 100%;
+      height: 8px;
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 9999px;
+      overflow: hidden;
+      margin: 8px 0;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10B981 0%, #F59E0B 50%, #EF4444 100%);
+      transition: width 0.5s ease;
+    }
+
+    /* Alerts */
+    .cyber-alert {
+      padding: 14px 18px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .cyber-alert-info {
+      background: rgba(14, 116, 144, 0.2);
+      border: 1px solid rgba(6, 182, 212, 0.4);
+      color: #67E8F9;
+    }
+
+    .cyber-alert-warning {
+      background: rgba(180, 83, 9, 0.2);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #FCD34D;
+    }
+
+    .cyber-alert-critical {
+      background: rgba(185, 28, 28, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #FCA5A5;
+    }
+
+    /* Views visibility */
+    .view-content {
+      display: none;
+    }
+    .view-content.active {
+      display: block;
+    }
+
+    /* Spinner */
+    .spinner {
+      border: 3px solid rgba(56, 189, 248, 0.2);
+      border-top: 3px solid var(--primary-cyan);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Footer */
+    footer.cyber-footer {
+      border-top: 1px solid rgba(56, 189, 248, 0.12);
+      background: rgba(6, 9, 19, 0.95);
+      padding: 20px;
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <header class="cyber-navbar">
+    <div class="brand-section">
+      <span class="brand-logo">🛡️</span>
+      <div>
+        <div class="brand-title">PrivacyGuard</div>
+        <div class="brand-subtitle">Explainable Application Privacy &amp; Permission Analyzer — PS02</div>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <div class="auth-pill" id="authStatusPill">
+        <span>👤 Analyst:</span>
+        <strong id="authUserName">System Administrator</strong>
+        <span class="badge badge-low" id="authUserRole">ADMIN</span>
+      </div>
+      <button class="btn btn-secondary btn-sm" id="btnQuickDemoLogin" onclick="handleDemoLogin()">⚡ Demo Login</button>
+      <a href="/docs" target="_blank" class="btn btn-secondary btn-sm">📖 API Docs</a>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="tabs-bar">
+    <button class="tab-btn active" onclick="switchView('dashboard')">📊 Dashboard</button>
+    <button class="tab-btn" onclick="switchView('newAnalysis')">🔍 New Analysis</button>
+    <button class="tab-btn" id="tabResultsBtn" onclick="switchView('results')">📑 Audit Results</button>
+    <button class="tab-btn" onclick="switchView('history')">📜 Audit History</button>
+    <button class="tab-btn" onclick="switchView('kb')">📚 Knowledge Base</button>
+    <button class="tab-btn" onclick="switchView('health')">⚙️ System Health</button>
+  </nav>
+
+  <!-- Main View Container -->
+  <main class="container">
+
+    <!-- VIEW 1: DASHBOARD -->
+    <section id="view-dashboard" class="view-content active">
+      <div class="card-header" style="border:none; margin-bottom:12px;">
+        <div>
+          <h2 style="font-size: 1.5rem; font-weight: 800; color: #FFFFFF;">📊 Security Operations Dashboard</h2>
+          <p class="card-subtitle">Real-time application audit telemetry, risk distributions, and recent evaluations.</p>
+        </div>
+        <button class="btn btn-primary" onclick="switchView('newAnalysis')">🚀 Launch New Analysis</button>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-label">Total Analyses</div>
+          <div class="metric-value" id="kpiTotalAnalyses">—</div>
+          <div class="metric-desc">Audited applications persisted in database</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Permissions Audited</div>
+          <div class="metric-value" id="kpiTotalPermissions">—</div>
+          <div class="metric-desc">Manifest permissions correlated with KB</div>
+        </div>
+        <div class="metric-card critical">
+          <div class="metric-label">High-Risk Findings</div>
+          <div class="metric-value" id="kpiHighRisks" style="color: #F87171;">—</div>
+          <div class="metric-desc">Critical or High risk applications</div>
+        </div>
+        <div class="metric-card warning">
+          <div class="metric-label">Unknown Perms</div>
+          <div class="metric-value" id="kpiUnknownPerms" style="color: #FDE047;">—</div>
+          <div class="metric-desc">Uncataloged proprietary permissions</div>
+        </div>
+      </div>
+
+      <!-- Risk Posture & Recent Activity -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div class="cyber-card">
+          <div class="card-title">📈 Security Risk Distribution</div>
+          <p class="card-subtitle" style="margin-bottom: 16px;">Breakdown of audited applications by severity tier.</p>
+          <div id="riskBarsContainer" style="display: flex; flex-direction: column; gap: 12px;">
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:4px;">
+                <span>🔴 Critical Risk</span><strong id="barCountCritical">0</strong>
+              </div>
+              <div class="progress-bar-container"><div id="barFillCritical" class="progress-bar-fill" style="width:0%; background:#EF4444;"></div></div>
+            </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:4px;">
+                <span>🟠 High Risk</span><strong id="barCountHigh">0</strong>
+              </div>
+              <div class="progress-bar-container"><div id="barFillHigh" class="progress-bar-fill" style="width:0%; background:#F97316;"></div></div>
+            </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:4px;">
+                <span>🟡 Medium Risk</span><strong id="barCountMedium">0</strong>
+              </div>
+              <div class="progress-bar-container"><div id="barFillMedium" class="progress-bar-fill" style="width:0%; background:#FBBF24;"></div></div>
+            </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:4px;">
+                <span>🟢 Low Risk</span><strong id="barCountLow">0</strong>
+              </div>
+              <div class="progress-bar-container"><div id="barFillLow" class="progress-bar-fill" style="width:0%; background:#10B981;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cyber-card">
+          <div class="card-title">⚡ Quick Demonstration Benchmarks</div>
+          <p class="card-subtitle" style="margin-bottom: 14px;">Instant 1-click test configurations from the benchmark suite:</p>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="benchmark-card" onclick="loadBenchmarkAndAnalyze('spyware')">
+              <div class="bench-title">🚨 Super Bright LED Flashlight (Spyware Benchmark)</div>
+              <div class="bench-desc">High-risk overprivileged flashlight with deceptive policy contradiction.</div>
+            </div>
+            <div class="benchmark-card" onclick="loadBenchmarkAndAnalyze('calculator')">
+              <div class="bench-title">✅ Synthetic Calculator (Clean Utility Benchmark)</div>
+              <div class="bench-desc">Benign arithmetic utility requesting only VIBRATE and INTERNET.</div>
+            </div>
+            <div class="benchmark-card" onclick="loadBenchmarkAndAnalyze('navigation')">
+              <div class="bench-title">📍 RoadMaster Navigation (Location Benchmark)</div>
+              <div class="bench-desc">Turn-by-turn navigation requesting expected Fine/Coarse Location.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Analyses Table -->
+      <div class="cyber-card">
+        <div class="card-header">
+          <div class="card-title">📑 Recent Analysis Records</div>
+          <button class="btn btn-secondary btn-sm" onclick="fetchDashboardMetrics()">🔄 Refresh</button>
+        </div>
+        <div class="table-container">
+          <table class="cyber-table">
+            <thead>
+              <tr>
+                <th>Audit ID</th>
+                <th>Application</th>
+                <th>Package ID</th>
+                <th>Risk Tier</th>
+                <th>Risk Score</th>
+                <th>Perms</th>
+                <th>Timestamp</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="recentAnalysesTableBody">
+              <tr><td colspan="8" style="text-align:center; color: var(--text-dim); padding: 24px;">Loading telemetry...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: NEW ANALYSIS WIZARD -->
+    <section id="view-newAnalysis" class="view-content">
+      <div class="cyber-card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">🔍 New Application Privacy &amp; Permission Audit</h2>
+            <p class="card-subtitle">Securely parse AndroidManifest.xml and cross-examine with privacy policies.</p>
+          </div>
+        </div>
+
+        <!-- Input Mode Selection -->
+        <div class="benchmarks-grid" style="margin-bottom: 20px;">
+          <div class="benchmark-card selected" id="benchTab1" onclick="selectBenchmarkCard('spyware')">
+            <div class="bench-title">🚨 Deceptive Flashlight</div>
+            <div class="bench-desc">Spyware requesting Camera, Audio, Contacts &amp; SMS while claiming zero collection.</div>
+          </div>
+          <div class="benchmark-card" id="benchTab2" onclick="selectBenchmarkCard('calculator')">
+            <div class="bench-title">🟢 Clean Calculator</div>
+            <div class="bench-desc">Benign utility with minimal normal permissions (Vibrate, Network).</div>
+          </div>
+          <div class="benchmark-card" id="benchTab3" onclick="selectBenchmarkCard('navigation')">
+            <div class="bench-title">📍 Turn-by-Turn GPS</div>
+            <div class="bench-desc">Legitimate navigation app with justified location &amp; foreground service.</div>
+          </div>
+          <div class="benchmark-card" id="benchTab4" onclick="selectBenchmarkCard('quickscan')">
+            <div class="bench-title">📄 QuickScan Doc Manager</div>
+            <div class="bench-desc">Document scanner with uncataloged vendor telemetry to test unknown explainability.</div>
+          </div>
+        </div>
+
+        <!-- File Upload / XML Text Area -->
+        <div class="form-group">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label class="form-label" style="margin-bottom:0;">AndroidManifest.xml Payload (Readable XML Text)</label>
+            <input type="file" id="manifestFileInput" accept=".xml" style="display:none;" onchange="handleFileUpload(event)">
+            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('manifestFileInput').click()">📁 Choose XML File...</button>
+          </div>
+          <textarea class="form-control" id="manifestXmlInput" rows="10" placeholder="Paste <?xml version='1.0' encoding='utf-8'?> <manifest ...> here..."></textarea>
+          <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px;">Protected by defusedxml: neutralizes XXE, Billion Laughs, and DTD expansion attacks. Max 5 MB.</div>
+        </div>
+
+        <!-- Privacy Policy Input -->
+        <div class="form-group">
+          <label class="form-label">Declared Privacy Policy Text (Optional for Cross-Examination)</label>
+          <textarea class="form-control" id="policyTextInput" rows="5" placeholder="Paste privacy policy text to cross-examine requested permissions with declared disclosures..."></textarea>
+        </div>
+
+        <!-- Purpose Input -->
+        <div class="form-group">
+          <label class="form-label">Application Stated Purpose (Optional)</label>
+          <input type="text" class="form-control" id="appPurposeInput" placeholder="e.g. A utility flashlight app that activates the device LED flash.">
+        </div>
+
+        <!-- Submit Button -->
+        <div style="display: flex; gap: 12px; align-items: center; margin-top: 20px;">
+          <button class="btn btn-primary" id="btnRunAudit" onclick="executeAnalysis()" style="font-size: 1rem; padding: 12px 28px;">
+            <span id="auditBtnSpinner" class="spinner" style="display:none;"></span>
+            <span id="auditBtnText">🚀 Run Explainable Privacy Audit</span>
+          </button>
+          <button class="btn btn-secondary" onclick="resetAnalysisForm()">Clear Form</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: AUDIT RESULTS REPORT -->
+    <section id="view-results" class="view-content">
+      <div id="resultsEmptyPlaceholder" class="cyber-alert cyber-alert-info">
+        <span>ℹ️ No active audit report loaded. Run a new analysis or select one from the history tab.</span>
+      </div>
+
+      <div id="resultsReportContainer" style="display:none;">
+        <!-- Report Header Card -->
+        <div class="cyber-card">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+            <div>
+              <div style="display:flex; align-items:center; gap:12px; margin-bottom:6px;">
+                <h2 id="resAppName" style="font-size:1.6rem; font-weight:800; color:#FFFFFF;">Application Name</h2>
+                <span id="resRiskBadge" class="badge badge-critical">CRITICAL RISK</span>
+              </div>
+              <p id="resPackageInfo" class="mono" style="font-size:0.85rem; color:var(--primary-cyan); margin-bottom:4px;">com.example.app</p>
+              <p id="resVersionInfo" style="font-size:0.78rem; color:var(--text-muted);">Version: 1.0.0 (Build 1) | Target SDK: 30</p>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:0.8rem; color:var(--text-muted); text-transform:uppercase;">Explainable Risk Score</div>
+              <div id="resRiskScore" style="font-size:2.2rem; font-weight:900; color:var(--text-main);">78 / 100</div>
+            </div>
+          </div>
+
+          <!-- Download Action Bar -->
+          <div style="display:flex; gap:12px; margin-top:20px; padding-top:16px; border-top:1px solid rgba(56,189,248,0.15); flex-wrap:wrap;">
+            <a id="btnDownloadPdf" href="#" class="btn btn-primary btn-sm" target="_blank">📄 Download PDF Report</a>
+            <a id="btnDownloadJson" href="#" class="btn btn-secondary btn-sm" target="_blank">🧾 Export JSON</a>
+            <a id="btnDownloadCsv" href="#" class="btn btn-secondary btn-sm" target="_blank">📊 Export CSV</a>
+          </div>
+        </div>
+
+        <!-- Findings Summary KPIs -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-label">Total Declared</div>
+            <div class="metric-value" id="resTotalPerms">0</div>
+          </div>
+          <div class="metric-card critical">
+            <div class="metric-label">Dangerous Perms</div>
+            <div class="metric-value" id="resDangerousPerms" style="color:#F87171;">0</div>
+          </div>
+          <div class="metric-card warning">
+            <div class="metric-label">Special Perms</div>
+            <div class="metric-value" id="resSpecialPerms" style="color:#FBBF24;">0</div>
+          </div>
+          <div class="metric-card success">
+            <div class="metric-label">Normal Perms</div>
+            <div class="metric-value" id="resNormalPerms" style="color:#34D399;">0</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Unknown Perms</div>
+            <div class="metric-value" id="resUnknownPerms">0</div>
+          </div>
+        </div>
+
+        <!-- SDK Security Warnings -->
+        <div id="sdkWarningsCard" class="cyber-card" style="display:none;">
+          <div class="card-title">⚠️ Target SDK &amp; Configuration Security Warnings</div>
+          <ul id="sdkWarningsList" style="padding-left: 20px; font-size: 0.85rem; color: #FCD34D; line-height: 1.6; margin-top: 10px;"></ul>
+        </div>
+
+        <!-- Contradictions & Policy Discrepancies -->
+        <div id="discrepanciesCard" class="cyber-card" style="display:none;">
+          <div class="card-title">🚨 Privacy Policy Contradictions &amp; Discrepancies</div>
+          <div id="discrepanciesContainer" style="display:flex; flex-direction:column; gap:12px; margin-top:12px;"></div>
+        </div>
+
+        <!-- Permissions Breakdown Table -->
+        <div class="cyber-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">🔬 Declared Permission Audit Findings</div>
+              <p class="card-subtitle">Non-presumptive cybersecurity explainability records grounded in curated knowledge base.</p>
+            </div>
+            <input type="text" id="permTableSearch" class="form-control" style="width:240px; padding:6px 12px; font-size:0.8rem;" placeholder="🔍 Filter permissions..." oninput="filterPermissionsTable()">
+          </div>
+          <div class="table-container">
+            <table class="cyber-table">
+              <thead>
+                <tr>
+                  <th>Permission Name</th>
+                  <th>Category</th>
+                  <th>Protection Level</th>
+                  <th>Risk Tier</th>
+                  <th>Source Reference</th>
+                  <th>Sensitive Data &amp; Implications</th>
+                  <th>Explanation</th>
+                </tr>
+              </thead>
+              <tbody id="permissionsTableBody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: AUDIT HISTORY -->
+    <section id="view-history" class="view-content">
+      <div class="cyber-card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">📜 Persistent Audit Records &amp; History</h2>
+            <p class="card-subtitle">Inspect historical application privacy evaluations stored in the relational database.</p>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="fetchHistory()">🔄 Refresh History</button>
+        </div>
+        <div class="table-container">
+          <table class="cyber-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Application</th>
+                <th>Package ID</th>
+                <th>Risk Tier</th>
+                <th>Score</th>
+                <th>Permissions</th>
+                <th>Created At</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <tr><td colspan="8" style="text-align:center; color: var(--text-dim); padding: 24px;">Loading historical records...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 5: KNOWLEDGE BASE BROWSER -->
+    <section id="view-kb" class="view-content">
+      <div class="cyber-card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">📚 Curated Android Permission Knowledge Base</h2>
+            <p class="card-subtitle">Curated database of verified Android platform permissions with forensic explainability rationale.</p>
+          </div>
+          <input type="text" id="kbSearchInput" class="form-control" style="width:280px; padding:6px 12px; font-size:0.8rem;" placeholder="🔍 Search KB (e.g. CAMERA, SMS)..." oninput="filterKnowledgeBase()">
+        </div>
+        <div class="table-container">
+          <table class="cyber-table">
+            <thead>
+              <tr>
+                <th>Permission</th>
+                <th>Category</th>
+                <th>Protection</th>
+                <th>Risk Level</th>
+                <th>Sensitive Data Gated</th>
+                <th>Official Docs</th>
+              </tr>
+            </thead>
+            <tbody id="kbTableBody">
+              <tr><td colspan="6" style="text-align:center; color: var(--text-dim); padding: 24px;">Loading permission knowledge base...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 6: SYSTEM HEALTH -->
+    <section id="view-health" class="view-content">
+      <div class="cyber-card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">⚙️ Deep System Health &amp; Diagnostics</h2>
+            <p class="card-subtitle">Real-time health probes verifying database connectivity, knowledge base cache, and report storage.</p>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="fetchHealth()">🔄 Probe System</button>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric-card success" id="healthDbCard">
+            <div class="metric-label">Database Connection</div>
+            <div class="metric-value" id="healthDbStatus" style="font-size:1.3rem;">CONNECTED</div>
+            <div class="metric-desc" id="healthDbEngine">Dialect: SQLite/PostgreSQL</div>
+          </div>
+          <div class="metric-card success" id="healthKbCard">
+            <div class="metric-label">Knowledge Base</div>
+            <div class="metric-value" id="healthKbStatus" style="font-size:1.3rem;">LOADED</div>
+            <div class="metric-desc" id="healthKbEntries">Permissions cached: —</div>
+          </div>
+          <div class="metric-card success" id="healthStorageCard">
+            <div class="metric-label">Report Storage</div>
+            <div class="metric-value" id="healthStorageStatus" style="font-size:1.3rem;">WRITABLE</div>
+            <div class="metric-desc" id="healthStoragePath">PDF Generator Ready</div>
+          </div>
+        </div>
+        <pre class="mono" id="healthJsonOutput" style="background:rgba(10,16,31,0.9); padding:16px; border-radius:8px; border:1px solid rgba(56,189,248,0.15); font-size:0.8rem; overflow-x:auto;">Probing /health endpoint...</pre>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="cyber-footer">
+    <p>🛡️ <strong>PrivacyGuard</strong> — Problem Statement PS02: Explainable Cybersecurity Application Privacy &amp; Permission Analyzer</p>
+    <p style="margin-top: 4px; color: #475569;">Hardened with DefusedXML &bull; Argon2id &bull; Rotating JWT &bull; Curated Knowledge Base &bull; ReportLab PDF Engine</p>
+  </footer>
+
+  <!-- Single Page Application Logic -->
+  <script>
+    // State management
+    const APP_STATE = {
+      token: localStorage.getItem('pg_access_token') || '',
+      currentUser: JSON.parse(localStorage.getItem('pg_user') || 'null'),
+      activeAnalysis: null,
+      cachedPermissions: []
+    };
+
+    // Pre-configured Benchmark Payloads
+    const BENCHMARKS = {
+      spyware: {
+        manifest: `<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.superboost.flashlight.free"
+    android:versionCode="3"
+    android:versionName="1.0.3">
+    <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="28" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <application android:label="Super Bright LED Flashlight" android:allowBackup="true">
+        <activity android:name=".MainActivity" android:exported="true" />
+    </application>
+</manifest>`,
+        policy: `Super Bright LED Flashlight Privacy Policy
+Last updated: January 2026
+We value user trust and privacy. Super Bright Flashlight is designed to turn your mobile LED flash into a powerful torch.
+Data Collection:
+We only collect non-personal device analytics to improve app performance.
+We do NOT collect, access, or store your SMS text messages, your microphone audio, your contacts book, or your precise GPS location.
+Your personal data remains strictly on your device. We never sell your personal data to any third parties.`,
+        purpose: "A utility flashlight application that activates the device LED flash."
+      },
+      calculator: {
+        manifest: `<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.privacyguard.demo.calculator"
+    android:versionCode="101"
+    android:versionName="1.0.1">
+    <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <application android:label="Synthetic Calculator" android:allowBackup="true">
+        <activity android:name=".MainActivity" android:exported="true" />
+    </application>
+</manifest>`,
+        policy: `Synthetic Calculator Privacy Policy:
+This arithmetic utility requires no personal user information, location, or sensitive device hardware. Internet access is utilized solely for standard banner advertisement retrieval.`,
+        purpose: "Simple arithmetic, scientific calculations, and unit conversion."
+      },
+      navigation: {
+        manifest: `<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.roadmaster.turnbyturn.gps"
+    android:versionCode="204"
+    android:versionName="2.4.0">
+    <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="33" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <application android:label="RoadMaster Navigation" android:allowBackup="false">
+        <activity android:name=".NavActivity" android:exported="true" />
+    </application>
+</manifest>`,
+        policy: `RoadMaster Navigation Privacy Statement:
+RoadMaster processes precise device coordinates to calculate driving routes, real-time rerouting, and traffic alerts. Background location enables continuous navigation prompts when the screen is locked.`,
+        purpose: "Turn-by-turn driving navigation, offline maps, and live traffic alerts."
+      },
+      quickscan: {
+        manifest: `<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.quickscan.docs.manager"
+    android:versionCode="12"
+    android:versionName="1.2.0">
+    <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="33" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.vendor.custom.TELEMETRY_SYNC" />
+    <application android:label="QuickScan Document Manager" android:allowBackup="true">
+        <activity android:name=".ScannerActivity" android:exported="true" />
+    </application>
+</manifest>`,
+        policy: `QuickScan Document Manager Policy:
+Access to device camera is strictly utilized for document optical scanning. Document images are stored locally on the device file system.`,
+        purpose: "Scan receipts and documents using camera, save to storage, and sync to cloud."
+      }
+    };
+
+    // Navigation Switcher
+    function switchView(viewName) {
+      document.querySelectorAll('.view-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+      const target = document.getElementById('view-' + viewName);
+      if (target) target.classList.add('active');
+
+      const tabs = {
+        dashboard: 0,
+        newAnalysis: 1,
+        results: 2,
+        history: 3,
+        kb: 4,
+        health: 5
+      };
+      const btns = document.querySelectorAll('.tab-btn');
+      if (btns[tabs[viewName]]) {
+        btns[tabs[viewName]].classList.add('active');
+      }
+
+      if (viewName === 'dashboard') fetchDashboardMetrics();
+      if (viewName === 'history') fetchHistory();
+      if (viewName === 'kb') fetchKnowledgeBase();
+      if (viewName === 'health') fetchHealth();
+    }
+
+    // Helper: Build headers with Auth Bearer
+    function getAuthHeaders(extra = {}) {
+      const headers = { ...extra };
+      if (APP_STATE.token) {
+        headers['Authorization'] = 'Bearer ' + APP_STATE.token;
+      }
+      return headers;
+    }
+
+    // Demo Login handler
+    async function handleDemoLogin() {
+      try {
+        const resp = await fetch('/api/v1/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: 'admin@privacyanalyzer.local',
+            password: 'AdminSecurePassword123!',
+            remember_me: true
+          })
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          APP_STATE.token = data.access_token;
+          APP_STATE.currentUser = data.user;
+          localStorage.setItem('pg_access_token', data.access_token);
+          localStorage.setItem('pg_user', JSON.stringify(data.user));
+          updateAuthUI();
+          alert('✓ Demo Administrator Session Authenticated!');
+          fetchDashboardMetrics();
+        } else {
+          // If default admin login fails, try guest registration
+          const regResp = await fetch('/api/v1/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: 'analyst.' + Date.now() + '@privacyanalyzer.local',
+              full_name: 'Guest Security Analyst',
+              password: 'AdminSecurePassword123!',
+              terms_accepted: true
+            })
+          });
+          if (regResp.ok) {
+            const regData = await regResp.json();
+            APP_STATE.token = regData.access_token;
+            APP_STATE.currentUser = regData.user;
+            localStorage.setItem('pg_access_token', regData.access_token);
+            localStorage.setItem('pg_user', JSON.stringify(regData.user));
+            updateAuthUI();
+            alert('✓ New Analyst Session Provisioned!');
+          }
+        }
+      } catch (err) {
+        console.error('Demo login error:', err);
+      }
+    }
+
+    function updateAuthUI() {
+      if (APP_STATE.currentUser) {
+        document.getElementById('authUserName').textContent = APP_STATE.currentUser.full_name || APP_STATE.currentUser.email;
+        const role = (APP_STATE.currentUser.role || 'user').toUpperCase();
+        document.getElementById('authUserRole').textContent = role;
+        document.getElementById('btnQuickDemoLogin').textContent = '🚪 Sign Out';
+        document.getElementById('btnQuickDemoLogin').onclick = () => {
+          localStorage.clear();
+          APP_STATE.token = '';
+          APP_STATE.currentUser = null;
+          location.reload();
+        };
+      }
+    }
+
+    // Benchmark selection
+    function selectBenchmarkCard(key) {
+      document.querySelectorAll('.benchmark-card').forEach(c => c.classList.remove('selected'));
+      const b = BENCHMARKS[key];
+      if (!b) return;
+      document.getElementById('manifestXmlInput').value = b.manifest;
+      document.getElementById('policyTextInput').value = b.policy;
+      document.getElementById('appPurposeInput').value = b.purpose;
+    }
+
+    function loadBenchmarkAndAnalyze(key) {
+      switchView('newAnalysis');
+      selectBenchmarkCard(key);
+      executeAnalysis();
+    }
+
+    function handleFileUpload(evt) {
+      const file = evt.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById('manifestXmlInput').value = e.target.result;
+      };
+      reader.readAsText(file);
+    }
+
+    function resetAnalysisForm() {
+      document.getElementById('manifestXmlInput').value = '';
+      document.getElementById('policyTextInput').value = '';
+      document.getElementById('appPurposeInput').value = '';
+    }
+
+    // Execute Analysis
+    async function executeAnalysis() {
+      const manifestXml = document.getElementById('manifestXmlInput').value.trim();
+      if (!manifestXml) {
+        alert('Please provide readable AndroidManifest.xml content.');
+        return;
+      }
+      const policyText = document.getElementById('policyTextInput').value.trim();
+
+      // Ensure authenticated before calling API
+      if (!APP_STATE.token) {
+        await handleDemoLogin();
+      }
+
+      const btn = document.getElementById('btnRunAudit');
+      const spinner = document.getElementById('auditBtnSpinner');
+      const btnText = document.getElementById('auditBtnText');
+
+      btn.disabled = true;
+      spinner.style.display = 'inline-block';
+      btnText.textContent = 'Analyzing Manifest & Knowledge Base...';
+
+      try {
+        const resp = await fetch('/api/v1/analyze/manifest', {
+          method: 'POST',
+          headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+          body: JSON.stringify({
+            manifest_xml: manifestXml,
+            privacy_policy_text: policyText || null,
+            source_file: 'AndroidManifest.xml'
+          })
+        });
+
+        if (resp.ok) {
+          const result = await resp.json();
+          renderAnalysisResults(result);
+          switchView('results');
+        } else {
+          const err = await resp.json();
+          alert('Analysis Error: ' + (err.detail || JSON.stringify(err)));
+        }
+      } catch (err) {
+        alert('Request failed: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        spinner.style.display = 'none';
+        btnText.textContent = '🚀 Run Explainable Privacy Audit';
+      }
+    }
+
+    // Render Analysis Results
+    function renderAnalysisResults(data) {
+      APP_STATE.activeAnalysis = data;
+      document.getElementById('resultsEmptyPlaceholder').style.display = 'none';
+      document.getElementById('resultsReportContainer').style.display = 'block';
+
+      document.getElementById('resAppName').textContent = data.app_name || 'Application';
+      document.getElementById('resPackageInfo').textContent = data.package_name || 'unknown.package';
+      document.getElementById('resVersionInfo').textContent = `Version: ${data.version_name || '1.0'} (Build ${data.version_code || 1}) | Target SDK: ${data.target_sdk || 'N/A'}`;
+
+      const score = data.risk_score || 0;
+      const level = (data.risk_level || 'LOW').toUpperCase();
+      document.getElementById('resRiskScore').textContent = `${score} / 100`;
+
+      const badge = document.getElementById('resRiskBadge');
+      badge.textContent = level + ' RISK';
+      badge.className = 'badge ' + (
+        level === 'CRITICAL' ? 'badge-critical' :
+        level === 'HIGH' ? 'badge-high' :
+        level === 'MEDIUM' ? 'badge-medium' : 'badge-low'
+      );
+
+      document.getElementById('resTotalPerms').textContent = data.total_permissions || 0;
+      document.getElementById('resDangerousPerms').textContent = data.dangerous_count || 0;
+      document.getElementById('resSpecialPerms').textContent = data.special_count || 0;
+      document.getElementById('resNormalPerms').textContent = data.normal_count || 0;
+      document.getElementById('resUnknownPerms').textContent = data.unknown_count || 0;
+
+      // Download buttons
+      const analysisId = data.id;
+      if (analysisId) {
+        document.getElementById('btnDownloadPdf').href = `/api/v1/analyses/${analysisId}/report?format=pdf`;
+        document.getElementById('btnDownloadJson').href = `/api/v1/analyses/${analysisId}/report?format=json`;
+        document.getElementById('btnDownloadCsv').href = `/api/v1/analyses/${analysisId}/report?format=csv`;
+      }
+
+      // SDK Warnings
+      const warnings = data.sdk_warnings || [];
+      const warningsCard = document.getElementById('sdkWarningsCard');
+      const warningsList = document.getElementById('sdkWarningsList');
+      if (warnings.length > 0) {
+        warningsCard.style.display = 'block';
+        warningsList.innerHTML = warnings.map(w => `<li>${w}</li>`).join('');
+      } else {
+        warningsCard.style.display = 'none';
+      }
+
+      // Permissions Table
+      APP_STATE.cachedPermissions = data.permission_records || [];
+      renderPermissionsTable(APP_STATE.cachedPermissions);
+    }
+
+    function renderPermissionsTable(perms) {
+      const tbody = document.getElementById('permissionsTableBody');
+      if (!perms || perms.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-dim); padding:20px;">No permissions declared in manifest.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = perms.map(p => {
+        const prot = p.protection_level || 'unknown';
+        const risk = (p.risk_level || 'LOW').toUpperCase();
+        const badgeClass = (
+          risk === 'CRITICAL' ? 'badge-critical' :
+          risk === 'HIGH' ? 'badge-high' :
+          risk === 'MEDIUM' ? 'badge-medium' : 'badge-low'
+        );
+
+        const sensitiveData = (p.sensitive_data || []).join(', ') || 'None specifically isolated';
+        const implications = (p.privacy_implications || []).slice(0, 2).join('; ') || 'Standard platform functionality';
+
+        return `<tr>
+          <td>
+            <div class="mono" style="font-weight:600; color:#FFFFFF;">${p.permission_name}</div>
+            ${p.is_duplicate ? '<span class="badge badge-unknown" style="font-size:0.65rem; margin-top:4px;">DUPLICATE</span>' : ''}
+          </td>
+          <td><span class="badge badge-unknown">${p.category || 'General'}</span></td>
+          <td><span class="mono" style="font-size:0.8rem; color:var(--text-muted);">${prot}</span></td>
+          <td><span class="badge ${badgeClass}">${risk}</span></td>
+          <td class="mono" style="font-size:0.75rem; color:var(--text-dim);">${p.source_reference || '/manifest/uses-permission'}</td>
+          <td style="font-size:0.8rem; color:var(--text-muted); max-width:240px;">
+            <strong style="color:var(--text-main);">Data:</strong> ${sensitiveData}<br>
+            <span style="color:var(--text-dim);">${implications}</span>
+          </td>
+          <td style="font-size:0.8rem; color:var(--text-muted); max-width:280px;">
+            ${p.explanation || 'Platform capability declared by application.'}
+            ${p.documentation_url ? `<br><a href="${p.documentation_url}" target="_blank" style="color:var(--primary-cyan); font-size:0.75rem; text-decoration:none;">🔗 Android Docs</a>` : ''}
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    function filterPermissionsTable() {
+      const q = document.getElementById('permTableSearch').value.toLowerCase();
+      const filtered = APP_STATE.cachedPermissions.filter(p =>
+        p.permission_name.toLowerCase().includes(q) ||
+        (p.category && p.category.toLowerCase().includes(q)) ||
+        (p.explanation && p.explanation.toLowerCase().includes(q))
+      );
+      renderPermissionsTable(filtered);
+    }
+
+    // Fetch Dashboard Metrics
+    async function fetchDashboardMetrics() {
+      try {
+        const resp = await fetch('/api/v1/analysis/dashboard/metrics', {
+          headers: getAuthHeaders()
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          document.getElementById('kpiTotalAnalyses').textContent = data.total_analyses || 0;
+          document.getElementById('kpiTotalPermissions').textContent = data.total_permissions || 0;
+          document.getElementById('kpiHighRisks').textContent = data.high_risks || 0;
+          document.getElementById('kpiUnknownPerms').textContent = data.unknown_permissions || 0;
+
+          const dist = data.risk_distribution || {};
+          const crit = dist.CRITICAL || 0;
+          const high = dist.HIGH || 0;
+          const med = dist.MEDIUM || 0;
+          const low = dist.LOW || 0;
+          const total = Math.max(crit + high + med + low, 1);
+
+          document.getElementById('barCountCritical').textContent = crit;
+          document.getElementById('barCountHigh').textContent = high;
+          document.getElementById('barCountMedium').textContent = med;
+          document.getElementById('barCountLow').textContent = low;
+
+          document.getElementById('barFillCritical').style.width = ((crit / total) * 100) + '%';
+          document.getElementById('barFillHigh').style.width = ((high / total) * 100) + '%';
+          document.getElementById('barFillMedium').style.width = ((med / total) * 100) + '%';
+          document.getElementById('barFillLow').style.width = ((low / total) * 100) + '%';
+
+          // Recent analyses
+          const recents = data.recent_analyses || [];
+          const tbody = document.getElementById('recentAnalysesTableBody');
+          if (recents.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-dim); padding:20px;">No analyses executed yet. Launch your first audit above!</td></tr>`;
+          } else {
+            tbody.innerHTML = recents.map(r => {
+              const tier = (r.risk_level || 'LOW').toUpperCase();
+              const badgeClass = (
+                tier === 'CRITICAL' ? 'badge-critical' :
+                tier === 'HIGH' ? 'badge-high' :
+                tier === 'MEDIUM' ? 'badge-medium' : 'badge-low'
+              );
+              return `<tr>
+                <td class="mono">#${r.id}</td>
+                <td><strong>${r.app_name}</strong></td>
+                <td class="mono" style="font-size:0.75rem; color:var(--primary-cyan);">${r.package_name}</td>
+                <td><span class="badge ${badgeClass}">${tier}</span></td>
+                <td><strong>${r.risk_score}</strong>/100</td>
+                <td>${r.total_permissions}</td>
+                <td style="font-size:0.75rem; color:var(--text-dim);">${new Date(r.created_at).toLocaleString()}</td>
+                <td><button class="btn btn-secondary btn-sm" onclick="inspectAnalysis(${r.id})">🔍 Inspect</button></td>
+              </tr>`;
+            }).join('');
+          }
+        }
+      } catch (err) {
+        console.error('Metrics fetch error:', err);
+      }
+    }
+
+    // Inspect existing analysis
+    async function inspectAnalysis(id) {
+      try {
+        const resp = await fetch(`/api/v1/analysis/${id}`, {
+          headers: getAuthHeaders()
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          renderAnalysisResults(data);
+          switchView('results');
+        } else {
+          alert('Failed to retrieve analysis record.');
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    }
+
+    // Fetch History
+    async function fetchHistory() {
+      try {
+        const resp = await fetch('/api/v1/analysis/history', {
+          headers: getAuthHeaders()
+        });
+        if (resp.ok) {
+          const items = await resp.json();
+          const tbody = document.getElementById('historyTableBody');
+          if (!items || items.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-dim); padding:24px;">No persistent audit history found.</td></tr>`;
+            return;
+          }
+          tbody.innerHTML = items.map(r => {
+            const tier = (r.risk_level || 'LOW').toUpperCase();
+            const badgeClass = (
+              tier === 'CRITICAL' ? 'badge-critical' :
+              tier === 'HIGH' ? 'badge-high' :
+              tier === 'MEDIUM' ? 'badge-medium' : 'badge-low'
+            );
+            return `<tr>
+              <td class="mono">#${r.id}</td>
+              <td><strong>${r.app_name}</strong></td>
+              <td class="mono" style="font-size:0.75rem; color:var(--primary-cyan);">${r.package_name}</td>
+              <td><span class="badge ${badgeClass}">${tier}</span></td>
+              <td><strong>${r.risk_score}</strong>/100</td>
+              <td>${r.total_permissions}</td>
+              <td style="font-size:0.75rem; color:var(--text-dim);">${new Date(r.created_at).toLocaleString()}</td>
+              <td>
+                <button class="btn btn-secondary btn-sm" onclick="inspectAnalysis(${r.id})">🔍 Inspect</button>
+              </td>
+            </tr>`;
+          }).join('');
+        }
+      } catch (err) {
+        console.error('History fetch error:', err);
+      }
+    }
+
+    // Fetch Knowledge Base
+    let cachedKb = [];
+    async function fetchKnowledgeBase() {
+      try {
+        const resp = await fetch('/api/v1/admin/knowledge-base', {
+          headers: getAuthHeaders()
+        });
+        if (resp.ok) {
+          cachedKb = await resp.json();
+          renderKbTable(cachedKb);
+        } else {
+          // Fallback if not admin: mock default common perms
+          renderKbTable([]);
+        }
+      } catch (err) {
+        console.error('KB fetch error:', err);
+      }
+    }
+
+    function renderKbTable(items) {
+      const tbody = document.getElementById('kbTableBody');
+      if (!items || items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-dim); padding:24px;">Knowledge base active with verified Android permissions. Authenticate as Admin to browse complete schema.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = items.slice(0, 50).map(k => {
+        const risk = (k.risk_level || 'LOW').toUpperCase();
+        const badgeClass = (
+          risk === 'CRITICAL' ? 'badge-critical' :
+          risk === 'HIGH' ? 'badge-high' :
+          risk === 'MEDIUM' ? 'badge-medium' : 'badge-low'
+        );
+        return `<tr>
+          <td class="mono" style="font-weight:600; color:#FFFFFF;">${k.permission_name}</td>
+          <td><span class="badge badge-unknown">${k.category || 'General'}</span></td>
+          <td class="mono" style="font-size:0.8rem; color:var(--text-muted);">${k.protection_level}</td>
+          <td><span class="badge ${badgeClass}">${risk}</span></td>
+          <td style="font-size:0.8rem; color:var(--text-muted);">${(k.sensitive_data || []).join(', ') || 'N/A'}</td>
+          <td>${k.documentation_url ? `<a href="${k.documentation_url}" target="_blank" style="color:var(--primary-cyan); font-size:0.75rem;">Docs</a>` : '—'}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function filterKnowledgeBase() {
+      const q = document.getElementById('kbSearchInput').value.toLowerCase();
+      const filtered = cachedKb.filter(k =>
+        k.permission_name.toLowerCase().includes(q) ||
+        (k.category && k.category.toLowerCase().includes(q))
+      );
+      renderKbTable(filtered);
+    }
+
+    // Fetch Health
+    async function fetchHealth() {
+      try {
+        const resp = await fetch('/health');
+        const data = await resp.json();
+        document.getElementById('healthJsonOutput').textContent = JSON.stringify(data, null, 2);
+
+        const dbStatus = data.components?.database?.status || 'unreachable';
+        document.getElementById('healthDbStatus').textContent = dbStatus.toUpperCase();
+        document.getElementById('healthDbEngine').textContent = 'Engine: ' + (data.components?.database?.engine || 'N/A');
+
+        const kbEntries = data.components?.knowledge_base?.entries || 0;
+        document.getElementById('healthKbStatus').textContent = data.components?.knowledge_base?.status?.toUpperCase() || 'LOADED';
+        document.getElementById('healthKbEntries').textContent = `Permissions cached: ${kbEntries}`;
+
+        const storage = data.components?.report_storage?.status || 'writable';
+        document.getElementById('healthStorageStatus').textContent = storage.toUpperCase();
+        document.getElementById('healthStoragePath').textContent = 'Path: ' + (data.components?.report_storage?.path || './reports');
+      } catch (err) {
+        document.getElementById('healthJsonOutput').textContent = 'Health probe failed: ' + err.message;
+      }
+    }
+
+    // Auto-init on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      updateAuthUI();
+      selectBenchmarkCard('spyware');
+      fetchDashboardMetrics();
+    });
+  </script>
+</body>
+</html>

@@ -2,14 +2,17 @@ import os
 import logging
 from datetime import datetime, timezone
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, status, Response
+from fastapi import FastAPI, status, Response, Request
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from backend.config import settings
 from backend.database import engine, Base, SessionLocal, check_db_connection
 from backend.models.user import User
 from backend.security.hashing import hash_password
 from backend.routers import auth, analysis, admin
+from backend.web_ui import get_frontend_html, STATIC_HTML_PATH
 from knowledge_base.lookup_service import permission_lookup_service
 
 # Structured Application Logging Setup
@@ -113,8 +116,37 @@ app.include_router(analysis.analyses_router, prefix="/api/v1")
 app.include_router(admin.router, prefix="/api/v1")
 
 
-@app.get("/")
-def root():
+# Optional static files mounting
+static_dir = STATIC_HTML_PATH.parent
+if static_dir.exists():
+    app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+
+
+@app.get("/", response_class=HTMLResponse)
+@app.get("/index.html", response_class=HTMLResponse)
+@app.get("/api/index", response_class=HTMLResponse)
+@app.get("/api/index/", response_class=HTMLResponse)
+def root(request: Request):
+    """
+    Serves the complete Privacy Analyzer frontend to web visitors.
+    If the caller explicitly requests application/json, returns API metadata.
+    """
+    accept = request.headers.get("accept", "")
+    if "application/json" in accept and "text/html" not in accept:
+        return JSONResponse({
+            "status": "online",
+            "service": settings.PROJECT_NAME,
+            "version": settings.APP_VERSION,
+            "environment": settings.ENV,
+            "docs_url": "/docs",
+            "api_v1": "/api/v1"
+        })
+    return HTMLResponse(content=get_frontend_html(), status_code=200)
+
+
+@app.get("/api/info")
+def api_info():
+    """Programmatic API service descriptor."""
     return {
         "status": "online",
         "service": settings.PROJECT_NAME,
