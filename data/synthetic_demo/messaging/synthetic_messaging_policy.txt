@@ -1,0 +1,15 @@
+PRIVACY POLICY FOR SYNTHETIC PULSE CHAT (DEMO DATA — NOT REAL USER DATA)
+Last Updated: November 2026
+
+1. PERSONAL INFORMATION & CONTACTS
+Pulse Chat accesses your device contacts list with your explicit permission to identify contacts who are also using Pulse Chat. Contact phone numbers are hashed using SHA-256 before transmission and are never stored as plain text on our servers. We do not share your address book with third-party advertisers.
+
+2. CAMERA AND AUDIO RECORDINGS
+We request access to your device camera and microphone strictly when you initiate taking a photo, recording a video, or creating an audio voice message to send within an active chat. Camera and microphone sessions are only active during direct user interaction; no background audiovisual recording is performed.
+
+3. DATA TRANSMISSION AND ENCRYPTION
+All messages, photos, and voice notes transmitted through Pulse Chat are protected with end-to-end encryption in transit. Stored attachments are decrypted only on the recipient's authenticated device.
+
+4. USER RIGHTS AND DATA DELETION
+You can revoke camera, microphone, and contacts permissions at any time via Android system settings. You can delete your account and associated profile information instantly within the application settings.
+

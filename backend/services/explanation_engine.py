@@ -69,7 +69,11 @@ class ExplanationEngine:
                 "severity_score": meta.get("severity_score", 1.0),
                 "remediation": meta.get("remediation", ""),
                 "policy_disclosed": is_disclosed,
-                "discrepancy_status": disc_status
+                "discrepancy_status": disc_status,
+                "platform_context": meta.get("platform_context", ""),
+                "documentation_url": meta.get("documentation_url", ""),
+                "sensitive_data": meta.get("sensitive_data", []),
+                "explanation": meta.get("explanation", "")
             })
 
         # Sort permissions by severity score descending

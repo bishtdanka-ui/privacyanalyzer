@@ -1,0 +1,15 @@
+PRIVACY POLICY FOR QUICKSCAN DOCUMENT MANAGER (SYNTHETIC DEMO DATA — NOT REAL USER DATA)
+Last Updated: November 2026
+
+1. CAMERA AND DOCUMENT CAPTURE
+QuickScan utilizes your device camera exclusively to capture images of physical receipts, whiteboards, documents, and business cards when you tap the Scan button. The live camera preview is used solely for framing and optical boundary detection. We do not record video streams or monitor ambient visual surroundings.
+
+2. STORAGE AND SAVED FILES
+Digitized documents and images are stored in your device's Pictures and Documents folders so you can export or attach them to emails. The application accesses local storage only to retrieve files you explicitly select for digitization or conversion.
+
+3. NETWORK TRANSMISSION & CLOUD SYNC
+If you link an optional cloud backup account, scanned documents are securely uploaded to your designated cloud drive using encrypted HTTPS connections. We do not sell or monetize personal document contents.
+
+4. USER CONSENT AND PERMISSION REVOCATION
+Camera access can be revoked at any time through Android system settings without affecting offline viewing of previously scanned documents.
+

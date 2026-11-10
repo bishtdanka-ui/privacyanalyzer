@@ -19,6 +19,18 @@ class Permission(Base):
     remediation = Column(Text, nullable=True)
     policy_disclosed = Column(Boolean, default=False, nullable=False)
     discrepancy_status = Column(String(100), default="NORMAL", nullable=False)
+    
+    # Manifest Source Traceability & Declaration Metadata
+    declaration_type = Column(String(50), default="uses-permission", nullable=True)
+    source_reference = Column(String(255), default="/manifest/uses-permission", nullable=True)
+    max_sdk_version = Column(Integer, nullable=True)
+    is_duplicate = Column(Boolean, default=False, nullable=False)
+
+    # Explainable Risk Analysis & Purpose Alignment
+    finding_category = Column(String(50), nullable=True)
+    purpose_alignment = Column(String(50), nullable=True)
+    risk_level = Column(String(50), nullable=True)
+    review_question = Column(Text, nullable=True)
 
     analysis = relationship("Analysis", back_populates="permissions")
 

@@ -1,22 +1,31 @@
+import os
 import logging
+from datetime import datetime, timezone
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, status, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.config import settings
-from backend.database import engine, Base, SessionLocal
+from backend.database import engine, Base, SessionLocal, check_db_connection
 from backend.models.user import User
 from backend.security.hashing import hash_password
 from backend.routers import auth, analysis, admin
+from knowledge_base.lookup_service import permission_lookup_service
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("backend")
+# Structured Application Logging Setup
+logging.basicConfig(
+    level=logging.INFO if settings.ENV == "production" else logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] [%(name)s] %(message)s",
+    datefmt="%Y-%m-%dT%H:%M:%SZ"
+)
+logger = logging.getLogger("privacyguard.backend")
+
 
 def init_db_and_seed():
     """
-    Create tables and seed initial administrator account if needed.
+    Initialize database schema and seed default administrator account if needed.
     """
-    logger.info("Initializing database tables...")
+    logger.info("Verifying database schema...")
     Base.metadata.create_all(bind=engine)
     
     db = SessionLocal()
@@ -34,49 +43,126 @@ def init_db_and_seed():
             )
             db.add(admin_user)
             db.commit()
-            logger.info("Default administrator account initialized.")
+            logger.info("Administrator account provisioned successfully.")
     except Exception as e:
-        logger.error(f"Error during database initialization: {e}")
+        logger.error(f"Error during database initialization/seeding: {e}")
         db.rollback()
     finally:
         db.close()
 
-init_db_and_seed()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Proper startup and graceful shutdown handling.
+    """
+    # --- STARTUP ---
+    logger.info(f"Starting {settings.PROJECT_NAME} (v{settings.APP_VERSION}) in [{settings.ENV.upper()}] mode")
+    init_db_and_seed()
+    
+    # Pre-check knowledge base entries
+    entry_count = permission_lookup_service.get_entry_count()
+    logger.info(f"Knowledge Base active with {entry_count} verified Android permissions.")
+    
+    # Verify report output directory write permissions
+    storage_writable = os.access(settings.REPORT_OUTPUT_DIR, os.W_OK)
+    if storage_writable:
+        logger.info(f"Report storage verified at {settings.REPORT_OUTPUT_DIR.resolve()}")
+    else:
+        logger.warning(f"Report storage path {settings.REPORT_OUTPUT_DIR} is NOT writable!")
+    
+    yield
+    
+    # --- SHUTDOWN ---
+    logger.info("Gracefully shutting down PrivacyGuard API services...")
+    engine.dispose()
+    logger.info("Database connection pool disposed. Shutdown complete.")
+
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
     description="Explainable Cybersecurity Application Privacy & Permission Analyzer API (PS02)",
-    version="1.0.0"
+    version=settings.APP_VERSION,
+    lifespan=lifespan
 )
 
 # CORS Configuration
+cors_origins = [o.strip() for o in settings.CORS_ORIGINS.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=cors_origins if cors_origins else ["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Mount API Routers
+# Mount Routers
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(analysis.router, prefix="/api/v1")
+app.include_router(analysis.analyze_router, prefix="/api/v1")
+app.include_router(analysis.analyses_router, prefix="/api/v1")
 app.include_router(admin.router, prefix="/api/v1")
+
 
 @app.get("/")
 def root():
     return {
         "status": "online",
         "service": settings.PROJECT_NAME,
+        "version": settings.APP_VERSION,
+        "environment": settings.ENV,
         "docs_url": "/docs",
         "api_v1": "/api/v1"
     }
 
-@app.get("/health")
-@app.get("/api/v1/health")
-def healthcheck():
-    return {"status": "healthy", "database": "connected"}
+
+@app.get("/health", status_code=status.HTTP_200_OK)
+@app.get("/api/v1/health", status_code=status.HTTP_200_OK)
+def healthcheck(response: Response = None):
+    """
+    Deep application health-check endpoint probing database connectivity,
+    knowledge base state, and report storage write accessibility.
+    """
+    if response is None:
+        response = Response()
+    db_ok = check_db_connection()
+    kb_count = permission_lookup_service.get_entry_count()
+    kb_ok = kb_count > 0
+    storage_ok = os.access(settings.REPORT_OUTPUT_DIR, os.W_OK)
+
+    is_healthy = db_ok and kb_ok and storage_ok
+    if not is_healthy:
+        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+
+    db_dialect = engine.dialect.name
+
+    return {
+        "status": "healthy" if is_healthy else "degraded",
+        "environment": settings.ENV,
+        "version": settings.APP_VERSION,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "components": {
+            "database": {
+                "status": "connected" if db_ok else "unreachable",
+                "engine": db_dialect
+            },
+            "knowledge_base": {
+                "status": "loaded" if kb_ok else "missing",
+                "entries": kb_count
+            },
+            "report_storage": {
+                "status": "writable" if storage_ok else "read_only",
+                "path": str(settings.REPORT_OUTPUT_DIR.resolve())
+            }
+        }
+    }
+
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("backend.main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run(
+        "backend.main:app",
+        host=settings.BACKEND_HOST,
+        port=settings.BACKEND_PORT,
+        reload=(settings.ENV == "development")
+    )

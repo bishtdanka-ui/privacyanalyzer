@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  =============================================================================
+  SYNTHETIC DEMO DATA — NOT REAL USER DATA
+  Application: Synthetic Minimal Calculator
+  Purpose: Simple arithmetic, scientific functions, and unit conversion.
+  Security Profile: Benign utility requesting minimal install-time permissions.
+  =============================================================================
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.privacyguard.demo.calculator"
+    android:versionCode="101"
+    android:versionName="1.0.1">
+
+    <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34" />
+
+    <!-- Haptic feedback on button presses -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    
+    <!-- Ad banner display -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:label="Synthetic Calculator"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
+</manifest>
+

@@ -13,9 +13,12 @@ class PolicyExcerpt(Base):
     analysis_id = Column(Integer, ForeignKey("analyses.id", ondelete="CASCADE"), nullable=False, index=True)
 
     domain = Column(String(100), nullable=False, index=True)  # Camera, Microphone, Location, etc.
-    excerpt_type = Column(String(50), nullable=False)  # "disclosure" or "negation"
+    excerpt_type = Column(String(50), nullable=False)  # "disclosure", "negation", "ambiguous"
     text_snippet = Column(Text, nullable=False)
-    sentiment_or_stance = Column(String(50), default="neutral")  # affirmative_collection, assertive_denial
+    sentiment_or_stance = Column(String(50), default="neutral")  # affirmative_collection, assertive_denial, vague_unclear
+    paragraph_ref = Column(String(50), nullable=True)  # e.g. "Paragraph 3"
+    start_offset = Column(Integer, nullable=True)
+    end_offset = Column(Integer, nullable=True)
     created_at = Column(DateTime(timezone=True), default=utc_now, nullable=False)
 
     analysis = relationship("Analysis", back_populates="policy_excerpts")

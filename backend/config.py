@@ -1,35 +1,68 @@
 import os
+import logging
 from pathlib import Path
 from dotenv import load_dotenv
+
+logger = logging.getLogger("backend.config")
 
 # Load .env file
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
+
 class Settings:
     PROJECT_NAME: str = os.getenv("PROJECT_NAME", "Explainable Application Privacy and Permission Analyzer")
-    ENV: str = os.getenv("ENV", "development")
+    APP_VERSION: str = os.getenv("APP_VERSION", "1.0.0")
+    ENV: str = os.getenv("ENV", "development").lower().strip()
+    
+    # Cryptographic Secret Key
     SECRET_KEY: str = os.getenv("SECRET_KEY", "super-secret-key-change-this-in-production-cybersecurity-ps02")
     ALGORITHM: str = os.getenv("ALGORITHM", "HS256")
     
     # Token Lifespans
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "15"))  # Short-lived access token
-    REFRESH_TOKEN_EXPIRE_DAYS: int = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "7"))      # Standard refresh token
-    REFRESH_TOKEN_REMEMBER_DAYS: int = int(os.getenv("REFRESH_TOKEN_REMEMBER_DAYS", "30")) # Extended remember-me session
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "15"))
+    REFRESH_TOKEN_EXPIRE_DAYS: int = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "7"))
+    REFRESH_TOKEN_REMEMBER_DAYS: int = int(os.getenv("REFRESH_TOKEN_REMEMBER_DAYS", "30"))
     
     # Brute-force & Throttle Security
     MAX_LOGIN_ATTEMPTS: int = int(os.getenv("MAX_LOGIN_ATTEMPTS", "5"))
     LOCKOUT_MINUTES: int = int(os.getenv("LOCKOUT_MINUTES", "15"))
     
+    # Database Configuration (PostgreSQL / SQLite)
     DATABASE_URL: str = os.getenv("DATABASE_URL", f"sqlite:///{BASE_DIR / 'privacy_analyzer.db'}")
     
+    # File Upload & Payload Size Limits
+    MAX_UPLOAD_SIZE_MB: int = int(os.getenv("MAX_UPLOAD_SIZE_MB", "5"))
+    MAX_MANIFEST_SIZE_BYTES: int = MAX_UPLOAD_SIZE_MB * 1024 * 1024
+    MAX_POLICY_LENGTH: int = int(os.getenv("MAX_POLICY_LENGTH", "1000000"))
+    
+    # Default Admin Seed (Configurable via Environment)
     DEFAULT_ADMIN_EMAIL: str = os.getenv("DEFAULT_ADMIN_EMAIL", "admin@privacyanalyzer.local")
     DEFAULT_ADMIN_PASSWORD: str = os.getenv("DEFAULT_ADMIN_PASSWORD", "AdminSecurePassword123!")
     
+    # Networking & CORS
+    BACKEND_HOST: str = os.getenv("BACKEND_HOST", "127.0.0.1")
+    BACKEND_PORT: int = int(os.getenv("BACKEND_PORT", "8000"))
+    FRONTEND_PORT: int = int(os.getenv("FRONTEND_PORT", "8501"))
+    CORS_ORIGINS: str = os.getenv("CORS_ORIGINS", "*")
+    
+    # Paths & Knowledge Base
     REPORT_OUTPUT_DIR: Path = Path(os.getenv("REPORT_OUTPUT_DIR", str(BASE_DIR / "reports")))
-    KB_PATH: Path = BASE_DIR / "data" / "android_permissions_kb.json"
+    UPLOAD_TEMP_DIR: Path = Path(os.getenv("UPLOAD_TEMP_DIR", str(BASE_DIR / "uploads")))
+    KB_PATH: Path = BASE_DIR / "knowledge_base" / "android_permissions.json"
 
-    REPORT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    def __init__(self):
+        self.REPORT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        self.UPLOAD_TEMP_DIR.mkdir(parents=True, exist_ok=True)
+        
+        # Security validation for production
+        if self.ENV == "production":
+            if "super-secret-key" in self.SECRET_KEY:
+                logger.warning(
+                    "SECURITY WARNING: Production mode enabled with default SECRET_KEY! "
+                    "Generate a cryptographically secure key via: "
+                    "python -c 'import secrets; print(secrets.token_urlsafe(64))'"
+                )
+
 
 settings = Settings()
-

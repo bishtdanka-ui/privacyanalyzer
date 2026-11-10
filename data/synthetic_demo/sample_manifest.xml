@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  =============================================================================
+  SYNTHETIC DEMO MANIFEST — NOT REAL USER DATA
+  PrivacyGuard Evaluation Target: QuickScan Document & Photo Manager
+  Package: com.privacyguard.demo.quickscan
+  Purpose: Document scanning, photo digitization, and cloud PDF backup.
+  Features:
+  - Standard dangerous permissions (Camera, Read Media Images)
+  - Install-time permissions (Internet, Network State)
+  - Custom proprietary permission for testing unknown permission detection
+  =============================================================================
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.privacyguard.demo.quickscan"
+    android:versionCode="1"
+    android:versionName="1.0.0">
+
+    <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34" />
+
+    <!-- Core feature: Document scanning via camera hardware -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Saving digitized scanned documents to shared photo/document storage -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
+
+    <!-- Cloud document synchronization -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Uncataloged custom vendor permission to demonstrate strict UNKNOWN explainability -->
+    <uses-permission android:name="com.synthetic.vendor.custom.DIAGNOSTIC_TELEMETRY" />
+
+    <application
+        android:label="QuickScan Document Manager"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_scanner"
+        android:theme="@style/Theme.QuickScan">
+
+        <activity
+            android:name=".ScannerActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
+</manifest>
+

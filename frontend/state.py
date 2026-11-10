@@ -1,5 +1,6 @@
 import streamlit as st
 from typing import Optional, Dict, Any
+from frontend.auth_client import auth_client
 
 def init_session_state():
     if "token" not in st.session_state:
@@ -18,11 +19,10 @@ def init_session_state():
         st.session_state["notification"] = None
 
 def is_authenticated() -> bool:
-    return st.session_state.get("token") is not None and st.session_state.get("user") is not None
+    return auth_client.is_authenticated()
 
 def is_admin() -> bool:
-    user = st.session_state.get("user")
-    return bool(user and user.get("role") == "admin")
+    return auth_client.is_admin()
 
 def login_user(access_token: str, user_dict: Dict[str, Any], refresh_token: Optional[str] = None):
     st.session_state["token"] = access_token
@@ -31,20 +31,7 @@ def login_user(access_token: str, user_dict: Dict[str, Any], refresh_token: Opti
     st.session_state["current_page"] = "Dashboard"
 
 def logout_user():
-    from frontend.api_client import api_client
-    token = st.session_state.get("token")
-    ref_token = st.session_state.get("refresh_token")
-    if token:
-        try:
-            api_client.logout(token, ref_token)
-        except Exception:
-            pass
-
-    st.session_state["token"] = None
-    st.session_state["refresh_token"] = None
-    st.session_state["user"] = None
-    st.session_state["active_analysis"] = None
-    st.session_state["current_page"] = "Dashboard"
+    auth_client.logout()
     st.rerun()
 
 def set_page(page_name: str):

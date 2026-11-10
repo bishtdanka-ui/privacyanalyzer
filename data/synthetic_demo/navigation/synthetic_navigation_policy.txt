@@ -1,0 +1,15 @@
+PRIVACY POLICY FOR SYNTHETIC ROADMASTER NAVIGATION (DEMO DATA — NOT REAL USER DATA)
+Last Updated: November 2026
+
+1. LOCATION DATA COLLECTION AND PURPOSE
+RoadMaster Navigation collects and processes real-time geographic location data, including precise GPS coordinates and coarse cellular triangulation data. This information is strictly required to provide turn-by-turn driving directions, calculate optimal travel routes, estimate arrival times, and provide real-time hazard warnings.
+
+2. BACKGROUND LOCATION TRACKING
+When active navigation mode is engaged, the application accesses location data continuously in the background (even when your screen is locked or another app is in view) to ensure voice instructions and missed-turn re-routing alerts operate without interruption. A persistent system notification is displayed whenever background location services are actively running.
+
+3. DATA RETENTION AND DELETION
+Historical travel routes and location points are stored locally on your device for recent trip history. We do not transmit persistent location histories to remote servers without explicit user backup consent. Users may clear navigation cache and stored destinations at any time through the Settings menu.
+
+4. THIRD-PARTY SHARING
+Aggregated, anonymized traffic speed statistics (with individual identity identifiers stripped) may be shared with municipal transit and mapping partners to optimize traffic routing. We never sell location profiles to advertising brokers.
+

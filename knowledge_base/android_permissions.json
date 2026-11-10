@@ -1,0 +1,712 @@
+{
+  "android.permission.CAMERA": {
+    "permission": "android.permission.CAMERA",
+    "category": "Camera",
+    "display_name": "Camera Access",
+    "description": "Required to be able to access the camera device for capturing still images and video streams.",
+    "privacy_implications": [
+      "Allows the application to capture still photos and real-time video recordings when authorized by the operating system.",
+      "May capture sensitive physical surroundings, personal identity, and document imagery."
+    ],
+    "sensitive_data": [
+      "Still Images",
+      "Video Streams",
+      "Surrounding Visual Environment"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Runtime permission introduced in Android 6.0 (API level 23). Declaring this in the manifest requires dynamic runtime user consent before any camera session can start. On Android 12+ (API 31+), the OS displays a persistent camera privacy indicator chip in the status bar.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#CAMERA",
+    "risk_level": "HIGH",
+    "explanation": "This application declares camera access. This declaration alone does not prove that the camera has been used or granted by the user at runtime."
+  },
+  "android.permission.RECORD_AUDIO": {
+    "permission": "android.permission.RECORD_AUDIO",
+    "category": "Microphone",
+    "display_name": "Record Audio / Microphone Access",
+    "description": "Allows an application to record audio using the device microphone input.",
+    "privacy_implications": [
+      "Enables recording of spoken conversations, ambient audio, and acoustic surroundings when granted by the user.",
+      "Could be abused for acoustic fingerprinting or ultrasonic tracking if unauthorized."
+    ],
+    "sensitive_data": [
+      "Voice Recordings",
+      "Ambient Audio",
+      "Acoustic Telemetry"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Runtime permission introduced in Android 6.0 (API level 23). On Android 12+ (API 31+), the system displays an active microphone indicator icon in the status bar. Background audio recording without a foreground service is restricted by modern Android versions.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#RECORD_AUDIO",
+    "risk_level": "HIGH",
+    "explanation": "This application declares microphone audio access. This declaration alone does not prove that the microphone has been activated or recorded audio."
+  },
+  "android.permission.ACCESS_FINE_LOCATION": {
+    "permission": "android.permission.ACCESS_FINE_LOCATION",
+    "category": "Location",
+    "display_name": "Precise Location Access",
+    "description": "Allows an app to access precise geographic location derived from GPS, Wi-Fi networks, and cellular towers.",
+    "privacy_implications": [
+      "Provides exact physical coordinates (typically within several meters), exposing home, work, and real-time transit routes.",
+      "Can reveal patterns of life and visits to sensitive locations (medical, legal, religious)."
+    ],
+    "sensitive_data": [
+      "Precise GPS Coordinates",
+      "Geographic Waypoints",
+      "Transit Telemetry"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Runtime permission introduced in Android 6.0 (API level 23). On Android 12 (API level 31) and higher, users can choose to grant only approximate location even if the application requests precise location.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#ACCESS_FINE_LOCATION",
+    "risk_level": "HIGH",
+    "explanation": "This application declares precise location access. This declaration alone does not prove that location services have been queried or tracked."
+  },
+  "android.permission.ACCESS_COARSE_LOCATION": {
+    "permission": "android.permission.ACCESS_COARSE_LOCATION",
+    "category": "Location",
+    "display_name": "Approximate Location Access",
+    "description": "Allows an app to access approximate location derived from network location sources such as cell towers and Wi-Fi.",
+    "privacy_implications": [
+      "Provides neighborhood-level or city-level location (accuracy typically within roughly 1-2 kilometers).",
+      "Allows regional behavioral profiling and city-level geo-targeted advertising."
+    ],
+    "sensitive_data": [
+      "Approximate Geographic Area",
+      "City/Regional Telemetry"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Runtime permission introduced in Android 6.0 (API level 23). Starting with Android 12 (API level 31), apps requesting location should request both ACCESS_COARSE_LOCATION and ACCESS_FINE_LOCATION in a single runtime prompt to respect user preference.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#ACCESS_COARSE_LOCATION",
+    "risk_level": "MEDIUM",
+    "explanation": "This application declares approximate location access. This declaration alone does not prove that network location has been polled."
+  },
+  "android.permission.ACCESS_BACKGROUND_LOCATION": {
+    "permission": "android.permission.ACCESS_BACKGROUND_LOCATION",
+    "category": "Location",
+    "display_name": "Background Location Access",
+    "description": "Allows an app to access location when running in the background without active user interaction.",
+    "privacy_implications": [
+      "Enables continuous, passive geolocation tracking even when the app is minimized or the device screen is locked.",
+      "High privacy impact due to potential for 24/7 life-pattern tracking."
+    ],
+    "sensitive_data": [
+      "Continuous Movement Logs",
+      "Historical Travel History",
+      "Passive Location Coordinates"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Introduced in Android 10 (API level 29). Cannot be requested alongside foreground location in the same runtime dialog on Android 11+; the user must be directed to system settings to explicitly select 'Allow all the time'. Google Play policy strictly restricts distribution of apps requesting background location.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#ACCESS_BACKGROUND_LOCATION",
+    "risk_level": "CRITICAL",
+    "explanation": "This application declares background location access. This declaration alone does not prove that passive background tracking is actively taking place."
+  },
+  "android.permission.READ_CONTACTS": {
+    "permission": "android.permission.READ_CONTACTS",
+    "category": "Contacts",
+    "display_name": "Read User Contacts",
+    "description": "Allows an application to read the user's contacts data, including names, numbers, emails, and address notes.",
+    "privacy_implications": [
+      "Exposes the user's full social graph, family connections, professional network, and private unlisted numbers.",
+      "Discloses third parties' personal contact information without their direct consent."
+    ],
+    "sensitive_data": [
+      "Contact Names",
+      "Phone Numbers",
+      "Email Addresses",
+      "Social Graph Information"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Runtime permission introduced in Android 6.0 (API level 23). Modern development best practices encourage using the Contact Picker Intent (ACTION_PICK) to retrieve individual contacts on demand without requesting broad address book read access.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#READ_CONTACTS",
+    "risk_level": "HIGH",
+    "explanation": "This application declares access to read contacts. This declaration alone does not prove that the user's address book has been accessed or extracted."
+  },
+  "android.permission.WRITE_CONTACTS": {
+    "permission": "android.permission.WRITE_CONTACTS",
+    "category": "Contacts",
+    "display_name": "Modify User Contacts",
+    "description": "Allows an application to write or modify the user's contacts data stored on the device.",
+    "privacy_implications": [
+      "Allows modifying, updating, or deleting existing contact records.",
+      "Could be abused by rogue apps to alter address book entries or inject unwanted contacts."
+    ],
+    "sensitive_data": [
+      "Address Book Records",
+      "Contact Attributes"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Runtime permission introduced in Android 6.0 (API level 23). Generally required only by dedicated address book synchronizers or dialers.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#WRITE_CONTACTS",
+    "risk_level": "MEDIUM",
+    "explanation": "This application declares access to modify contacts. This declaration alone does not prove that contacts have been modified or deleted."
+  },
+  "android.permission.READ_CALENDAR": {
+    "permission": "android.permission.READ_CALENDAR",
+    "category": "Calendar",
+    "display_name": "Read Calendar Events",
+    "description": "Allows an application to read the user's calendar events and meeting schedules.",
+    "privacy_implications": [
+      "Reveals personal schedules, business meetings, medical appointments, travel reservations, and attendees.",
+      "Exposes confidential event descriptions and locations."
+    ],
+    "sensitive_data": [
+      "Meeting Titles",
+      "Schedule Times",
+      "Attendee Email Addresses",
+      "Appointment Locations"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Runtime permission introduced in Android 6.0 (API level 23). Applications only needing to view events can delegate viewing to the system Calendar app via Intent.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#READ_CALENDAR",
+    "risk_level": "MEDIUM",
+    "explanation": "This application declares calendar read access. This declaration alone does not prove that calendar schedules have been accessed."
+  },
+  "android.permission.WRITE_CALENDAR": {
+    "permission": "android.permission.WRITE_CALENDAR",
+    "category": "Calendar",
+    "display_name": "Modify Calendar Events",
+    "description": "Allows an application to create, edit, or delete calendar events without direct user intervention.",
+    "privacy_implications": [
+      "Allows silent addition of calendar events or deletion of user schedule records.",
+      "Could be leveraged for calendar spam phishing by inserting deceptive meeting notifications."
+    ],
+    "sensitive_data": [
+      "Calendar Schedule Data",
+      "Event Notifications"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Runtime permission introduced in Android 6.0 (API level 23). Developers are encouraged to use ACTION_INSERT with CalendarContract to allow the user to review before saving.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#WRITE_CALENDAR",
+    "risk_level": "MEDIUM",
+    "explanation": "This application declares calendar modification access. This declaration alone does not prove that calendar events have been altered."
+  },
+  "android.permission.READ_EXTERNAL_STORAGE": {
+    "permission": "android.permission.READ_EXTERNAL_STORAGE",
+    "category": "Storage",
+    "display_name": "Read External Storage (Legacy)",
+    "description": "Allows an application to read files from external shared storage (documents, photos, downloads).",
+    "privacy_implications": [
+      "Grants broad access to shared files on device storage across applications.",
+      "Exposes personal downloads, photos, and document files."
+    ],
+    "sensitive_data": [
+      "Shared Files",
+      "Downloaded Documents",
+      "Legacy Media Files"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Deprecated in Android 13 (API level 33). On Android 13+, apps targeting API 33 must request granular permissions (READ_MEDIA_IMAGES, READ_MEDIA_VIDEO, READ_MEDIA_AUDIO). On Android 10+ (API 29+), Scoped Storage enforces restricted storage boundaries.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#READ_EXTERNAL_STORAGE",
+    "risk_level": "HIGH",
+    "explanation": "This application declares legacy external storage read access. This declaration alone does not prove that shared files have been accessed."
+  },
+  "android.permission.WRITE_EXTERNAL_STORAGE": {
+    "permission": "android.permission.WRITE_EXTERNAL_STORAGE",
+    "category": "Storage",
+    "display_name": "Write External Storage (Legacy)",
+    "description": "Allows an application to write to external shared storage.",
+    "privacy_implications": [
+      "Allows creating, editing, and deleting files on external shared storage.",
+      "Untrusted apps could overwrite or corrupt shared files."
+    ],
+    "sensitive_data": [
+      "File System Structure",
+      "Shared External Data"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Deprecated starting in Android 10 (API level 29) and completely restricted on Android 11 (API 30) with Scoped Storage enforcement. Apps can write to their app-specific directories (context.getExternalFilesDir()) without declaring this permission.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#WRITE_EXTERNAL_STORAGE",
+    "risk_level": "HIGH",
+    "explanation": "This application declares legacy external storage write access. This declaration alone does not prove that files have been written or modified."
+  },
+  "android.permission.READ_MEDIA_IMAGES": {
+    "permission": "android.permission.READ_MEDIA_IMAGES",
+    "category": "Storage",
+    "display_name": "Read Photos & Images",
+    "description": "Allows an application to read image files from shared media storage.",
+    "privacy_implications": [
+      "Provides access to personal photo gallery and stored images.",
+      "Photos may contain embedded Exif metadata including camera models, timestamps, and GPS coordinates."
+    ],
+    "sensitive_data": [
+      "User Photos",
+      "Saved Images",
+      "Exif Metadata"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Introduced in Android 13 (API level 33) as part of granular media access to replace broad READ_EXTERNAL_STORAGE. Starting with Android 14 (API level 34), users can grant partial access to selected photos only (READ_MEDIA_VISUAL_USER_SELECTED).",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#READ_MEDIA_IMAGES",
+    "risk_level": "HIGH",
+    "explanation": "This application declares access to read image files. This declaration alone does not prove that photos have been retrieved."
+  },
+  "android.permission.READ_MEDIA_VIDEO": {
+    "permission": "android.permission.READ_MEDIA_VIDEO",
+    "category": "Storage",
+    "display_name": "Read Videos",
+    "description": "Allows an application to read video files from shared media storage.",
+    "privacy_implications": [
+      "Provides access to personal video recordings and saved video media.",
+      "Videos may depict private personal moments and locations."
+    ],
+    "sensitive_data": [
+      "Video Recordings",
+      "Saved Media Files"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Introduced in Android 13 (API level 33) as part of granular media access. Replaces broad storage permission for video playback and editing applications.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#READ_MEDIA_VIDEO",
+    "risk_level": "HIGH",
+    "explanation": "This application declares access to read video files. This declaration alone does not prove that videos have been accessed."
+  },
+  "android.permission.READ_MEDIA_AUDIO": {
+    "permission": "android.permission.READ_MEDIA_AUDIO",
+    "category": "Storage",
+    "display_name": "Read Audio Files",
+    "description": "Allows an application to read audio files from shared storage.",
+    "privacy_implications": [
+      "Provides access to music libraries, downloaded podcasts, and voice notes stored in shared audio directories."
+    ],
+    "sensitive_data": [
+      "Music Files",
+      "Audio Recordings",
+      "Podcasts"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Introduced in Android 13 (API level 33) as part of granular media access. Enables media player apps to access shared audio without exposing photos or documents.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#READ_MEDIA_AUDIO",
+    "risk_level": "MEDIUM",
+    "explanation": "This application declares access to read audio files. This declaration alone does not prove that audio files have been accessed."
+  },
+  "android.permission.READ_PHONE_STATE": {
+    "permission": "android.permission.READ_PHONE_STATE",
+    "category": "Phone",
+    "display_name": "Read Phone State & Identity",
+    "description": "Allows read-only access to phone state, including cellular network info, active call status, and phone number.",
+    "privacy_implications": [
+      "Allows tracking call state (ringing, off-hook, idle) and current cellular network connection.",
+      "Historically allowed reading non-resettable hardware identifiers (IMEI/IMSI) on Android 9 and older."
+    ],
+    "sensitive_data": [
+      "Cellular Network Status",
+      "Ongoing Call State",
+      "Phone Number (on supported SIMs)"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Runtime permission introduced in Android 6.0 (API level 23). On Android 10 (API level 29) and higher, access to non-resettable device identifiers (IMEI, serial number) is completely blocked for third-party apps regardless of this permission.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#READ_PHONE_STATE",
+    "risk_level": "HIGH",
+    "explanation": "This application declares access to read phone state. This declaration alone does not prove that telephony status has been inspected."
+  },
+  "android.permission.CALL_PHONE": {
+    "permission": "android.permission.CALL_PHONE",
+    "category": "Phone",
+    "display_name": "Initiate Phone Calls Directly",
+    "description": "Allows an application to initiate a phone call without going through the Dialer user interface for user confirmation.",
+    "privacy_implications": [
+      "Enables placing telephone calls without requiring the user to tap the dial button.",
+      "Risk of toll fraud if abused by dialing premium-rate or international numbers."
+    ],
+    "sensitive_data": [
+      "Outgoing Call Initiation",
+      "Dialed Phone Numbers"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Runtime permission introduced in Android 6.0 (API level 23). Best practice is using ACTION_DIAL intent, which opens the dialer with the number pre-filled and requires user confirmation.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#CALL_PHONE",
+    "risk_level": "HIGH",
+    "explanation": "This application declares direct phone call initiation. This declaration alone does not prove that phone calls have been placed."
+  },
+  "android.permission.SEND_SMS": {
+    "permission": "android.permission.SEND_SMS",
+    "category": "SMS",
+    "display_name": "Send SMS Messages Directly",
+    "description": "Allows an application to send SMS messages directly without user interaction.",
+    "privacy_implications": [
+      "Can send SMS messages silently in the background.",
+      "Risk of premium-rate SMS billing fraud and dissemination of spam or malware links."
+    ],
+    "sensitive_data": [
+      "Outbound Message Content",
+      "Recipient Phone Numbers",
+      "Telecom Carrier Billing"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Runtime permission introduced in Android 6.0 (API level 23). Google Play policy strictly restricts this permission to default SMS handlers or specific approved core-use cases.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#SEND_SMS",
+    "risk_level": "CRITICAL",
+    "explanation": "This application declares access to send SMS messages. This declaration alone does not prove that text messages have been transmitted."
+  },
+  "android.permission.READ_SMS": {
+    "permission": "android.permission.READ_SMS",
+    "category": "SMS",
+    "display_name": "Read SMS Messages",
+    "description": "Allows an application to read SMS messages stored on the device or SIM card.",
+    "privacy_implications": [
+      "Exposes two-factor authentication (2FA) verification codes, one-time passwords (OTPs), and banking security texts.",
+      "Reveals private conversational text messages and communications."
+    ],
+    "sensitive_data": [
+      "Two-Factor Authentication Codes (2FA/OTP)",
+      "Confidential Text Messages",
+      "Sender Phone Numbers"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Runtime permission introduced in Android 6.0 (API level 23). Highly restricted by Google Play policy. Apps needing OTP verification should adopt the zero-permission Google Play Services SMS Retriever API.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#READ_SMS",
+    "risk_level": "CRITICAL",
+    "explanation": "This application declares access to read SMS messages. This declaration alone does not prove that text messages have been read."
+  },
+  "android.permission.RECEIVE_SMS": {
+    "permission": "android.permission.RECEIVE_SMS",
+    "category": "SMS",
+    "display_name": "Receive Incoming SMS",
+    "description": "Allows an application to receive incoming SMS messages as they arrive.",
+    "privacy_implications": [
+      "Enables real-time interception of incoming verification codes, OTPs, and private text messages.",
+      "Malicious apps could suppress notification broadcasts to hide OTP interception."
+    ],
+    "sensitive_data": [
+      "Incoming Text Messages",
+      "Real-Time OTP Verification Tokens"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Runtime permission introduced in Android 6.0 (API level 23). Restricted by Google Play policy strictly to default SMS handler applications.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#RECEIVE_SMS",
+    "risk_level": "CRITICAL",
+    "explanation": "This application declares access to receive SMS messages. This declaration alone does not prove that incoming texts have been intercepted."
+  },
+  "android.permission.POST_NOTIFICATIONS": {
+    "permission": "android.permission.POST_NOTIFICATIONS",
+    "category": "Notifications",
+    "display_name": "Post Notifications",
+    "description": "Allows an application to post system notifications to the user.",
+    "privacy_implications": [
+      "Allows displaying alert notifications in the system shade.",
+      "Could be abused for advertising spam or social-engineering fake system security alerts."
+    ],
+    "sensitive_data": [
+      "Notification Shade Content",
+      "Alert Messages"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Introduced in Android 13 (API level 33). On earlier versions of Android, notification posting was granted automatically. On Android 13+, it requires explicit runtime user consent.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#POST_NOTIFICATIONS",
+    "risk_level": "LOW",
+    "explanation": "This application declares permission to post notifications. This declaration alone does not prove that notifications have been pushed."
+  },
+  "android.permission.INTERNET": {
+    "permission": "android.permission.INTERNET",
+    "category": "Network",
+    "display_name": "Full Internet Access",
+    "description": "Allows applications to open network sockets and send/receive data across the internet.",
+    "privacy_implications": [
+      "Enables network communication with remote servers, APIs, and cloud endpoints.",
+      "Serves as the transmission channel for potential data exfiltration if sensitive permissions are granted."
+    ],
+    "sensitive_data": [
+      "Outbound Network Payloads",
+      "Inbound Remote Data"
+    ],
+    "protection_level": "normal",
+    "platform_context": "Normal protection level present since API level 1. Granted automatically by the operating system at install time; does not prompt the user for runtime authorization. Starting with Android 9 (API level 28), cleartext unencrypted HTTP is blocked by default in favor of TLS/HTTPS.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#INTERNET",
+    "risk_level": "LOW",
+    "explanation": "This application declares internet access. This declaration alone does not prove that network data transmission has occurred."
+  },
+  "android.permission.ACCESS_NETWORK_STATE": {
+    "permission": "android.permission.ACCESS_NETWORK_STATE",
+    "category": "Network",
+    "display_name": "View Network Connections",
+    "description": "Allows applications to access information about active network connections (Wi-Fi, cellular, roaming).",
+    "privacy_implications": [
+      "Allows checking connectivity status to adapt network operations (e.g. postponing uploads until on unmetered Wi-Fi).",
+      "Minor fingerprinting capability regarding connection type."
+    ],
+    "sensitive_data": [
+      "Connection Type (Wi-Fi/Cellular)",
+      "Network Availability State"
+    ],
+    "protection_level": "normal",
+    "platform_context": "Normal protection level present since API level 1. Automatically granted at installation time without runtime user interaction.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#ACCESS_NETWORK_STATE",
+    "risk_level": "NEGLIGIBLE",
+    "explanation": "This application declares access to view network connections. This declaration alone does not prove that network status has been inspected."
+  },
+  "android.permission.BLUETOOTH": {
+    "permission": "android.permission.BLUETOOTH",
+    "category": "Bluetooth",
+    "display_name": "Bluetooth Access (Legacy)",
+    "description": "Allows applications to connect to paired Bluetooth devices.",
+    "privacy_implications": [
+      "Allows communication with paired Bluetooth accessories.",
+      "Historically permitted device discovery which could be used for coarse indoor tracking."
+    ],
+    "sensitive_data": [
+      "Bluetooth Connection Metadata"
+    ],
+    "protection_level": "normal",
+    "platform_context": "Deprecated in Android 12 (API level 31). Apps targeting API 31 and higher must use the runtime permissions BLUETOOTH_CONNECT, BLUETOOTH_SCAN, and BLUETOOTH_ADVERTISE instead.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#BLUETOOTH",
+    "risk_level": "LOW",
+    "explanation": "This application declares legacy Bluetooth access. This declaration alone does not prove that Bluetooth devices have been connected."
+  },
+  "android.permission.BLUETOOTH_CONNECT": {
+    "permission": "android.permission.BLUETOOTH_CONNECT",
+    "category": "Bluetooth",
+    "display_name": "Connect to Bluetooth Devices",
+    "description": "Required to be able to connect to paired Bluetooth devices on Android 12+.",
+    "privacy_implications": [
+      "Allows exchanging data with paired Bluetooth accessories, wearables, health monitors, or audio peripherals."
+    ],
+    "sensitive_data": [
+      "Connected Peripheral Telemetry",
+      "Bluetooth Device Identifiers"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Introduced in Android 12 (API level 31) as a runtime permission. Replaces the older legacy normal BLUETOOTH permission with explicit user runtime consent.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#BLUETOOTH_CONNECT",
+    "risk_level": "MEDIUM",
+    "explanation": "This application declares permission to connect to Bluetooth devices. This declaration alone does not prove that peripheral connections have been established."
+  },
+  "android.permission.BLUETOOTH_SCAN": {
+    "permission": "android.permission.BLUETOOTH_SCAN",
+    "category": "Bluetooth",
+    "display_name": "Scan for Bluetooth Devices",
+    "description": "Required to be able to discover and pair nearby Bluetooth devices on Android 12+.",
+    "privacy_implications": [
+      "Allows detecting nearby Bluetooth Low Energy (BLE) beacons and devices.",
+      "BLE beacon scanning can derive user physical location (e.g. inside retail stores or transit stations)."
+    ],
+    "sensitive_data": [
+      "Nearby BLE Beacons",
+      "Physical Proximity Telemetry"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Introduced in Android 12 (API level 31) as a runtime permission. If the app uses scanning solely to connect to devices and does not derive location, it can declare android:usesPermissionFlags='neverForLocation' in the manifest.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#BLUETOOTH_SCAN",
+    "risk_level": "HIGH",
+    "explanation": "This application declares permission to scan for nearby Bluetooth devices. This declaration alone does not prove that scanning or beacon tracking has occurred."
+  },
+  "android.permission.NFC": {
+    "permission": "android.permission.NFC",
+    "category": "Near Field Communication",
+    "display_name": "Perform NFC Operations",
+    "description": "Allows applications to perform I/O operations over Near Field Communication (NFC).",
+    "privacy_implications": [
+      "Allows reading data from physical NFC tags or exchanging data with other NFC-capable devices in close physical proximity (typically < 4 cm)."
+    ],
+    "sensitive_data": [
+      "NFC Tag Contents",
+      "Proximity Payload Data"
+    ],
+    "protection_level": "normal",
+    "platform_context": "Normal protection level present since Android 2.3 (API level 9). Automatically granted at install time. Does not allow background reading unless an NFC activity is in the foreground.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#NFC",
+    "risk_level": "LOW",
+    "explanation": "This application declares NFC capability. This declaration alone does not prove that NFC operations have been executed."
+  },
+  "android.permission.BODY_SENSORS": {
+    "permission": "android.permission.BODY_SENSORS",
+    "category": "Sensors",
+    "display_name": "Access Body Sensors",
+    "description": "Allows an application to access data from sensors that monitor physical conditions of the user, such as heart rate monitors.",
+    "privacy_implications": [
+      "Provides direct access to intimate physiological and health metrics (cardiac rhythms, body temperature).",
+      "High sensitivity under healthcare data protection regulations (HIPAA, GDPR Health Data)."
+    ],
+    "sensitive_data": [
+      "Heart Rate Data",
+      "Vital Signs",
+      "Biometric Sensor Telemetry"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Runtime permission introduced in Android 4.4W (API level 20) and converted to runtime consent in Android 6.0 (API level 23). On Android 13+ (API level 33), BODY_SENSORS_BACKGROUND is required to read sensor data while running in the background.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#BODY_SENSORS",
+    "risk_level": "HIGH",
+    "explanation": "This application declares body sensor access. This declaration alone does not prove that biometric sensor readings have been collected."
+  },
+  "android.permission.ACTIVITY_RECOGNITION": {
+    "permission": "android.permission.ACTIVITY_RECOGNITION",
+    "category": "Sensors",
+    "display_name": "Physical Activity Recognition",
+    "description": "Allows an application to recognize physical activities such as walking, running, bicycling, or driving.",
+    "privacy_implications": [
+      "Allows monitoring daily physical routines, step counts, and commuting transit states.",
+      "Can profile lifestyle patterns and daily routines."
+    ],
+    "sensitive_data": [
+      "Step Count History",
+      "Physical Motion State",
+      "Commuting Modality"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Introduced in Android 10 (API level 29) as a runtime permission. Prior to Android 10, activity recognition was bundled with Google Play Services without a separate manifest runtime gate.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#ACTIVITY_RECOGNITION",
+    "risk_level": "MEDIUM",
+    "explanation": "This application declares physical activity recognition. This declaration alone does not prove that motion telemetry has been logged."
+  },
+  "android.permission.SYSTEM_ALERT_WINDOW": {
+    "permission": "android.permission.SYSTEM_ALERT_WINDOW",
+    "category": "System Overlay",
+    "display_name": "Display Over Other Apps",
+    "description": "Allows an app to create windows shown on top of all other applications.",
+    "privacy_implications": [
+      "Allows drawing floating UI elements over the interface of any other app.",
+      "Historically abused for tapjacking attacks and credential-harvesting phishing overlays."
+    ],
+    "sensitive_data": [
+      "Visual Screen Presentation",
+      "User Touch Input Interception"
+    ],
+    "protection_level": "special",
+    "platform_context": "Special app access permission. Cannot be granted via standard runtime dialogs; the user must navigate to Android Settings > Apps > Special App Access > Display Over Other Apps. On Android 12+, overlay touches are blocked on untrusted overlays to mitigate tapjacking.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#SYSTEM_ALERT_WINDOW",
+    "risk_level": "CRITICAL",
+    "explanation": "This application declares display overlay access. This is a special permission requiring explicit user enablement in Android system settings. Declaration alone does not prove that overlays have been shown."
+  },
+  "android.permission.REQUEST_INSTALL_PACKAGES": {
+    "permission": "android.permission.REQUEST_INSTALL_PACKAGES",
+    "category": "Package Management",
+    "display_name": "Request Installation of Packages",
+    "description": "Allows an application to request installation of packages outside official application marketplaces.",
+    "privacy_implications": [
+      "Allows prompting the user to install secondary standalone APK packages.",
+      "Often used by dropper malware to stage secondary malicious payloads."
+    ],
+    "sensitive_data": [
+      "Package Installation Queue",
+      "Secondary App Binaries"
+    ],
+    "protection_level": "special",
+    "platform_context": "Introduced in Android 8.0 (API level 26). Special permission managed per-app in System Settings > Install Unknown Apps. Scrutinized heavily by Google Play security policies.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#REQUEST_INSTALL_PACKAGES",
+    "risk_level": "CRITICAL",
+    "explanation": "This application declares permission to request package installations. This is a special app permission requiring per-app authorization in system settings. Declaration alone does not prove that APKs have been installed."
+  },
+  "android.permission.PACKAGE_USAGE_STATS": {
+    "permission": "android.permission.PACKAGE_USAGE_STATS",
+    "category": "System Monitoring",
+    "display_name": "Access Usage Statistics",
+    "description": "Allows an application to collect component usage statistics regarding which apps are opened, frequency, and duration.",
+    "privacy_implications": [
+      "Reveals user application habits (dating apps, financial banking apps, health trackers).",
+      "Allows detecting the exact moment another app is launched."
+    ],
+    "sensitive_data": [
+      "App Launch Timestamps",
+      "App Screen Time",
+      "Installed Application Catalog"
+    ],
+    "protection_level": "special",
+    "platform_context": "Introduced in Android 5.0 (API level 21). Requires explicit user grant via System Settings > Apps > Special App Access > Usage Access.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#PACKAGE_USAGE_STATS",
+    "risk_level": "HIGH",
+    "explanation": "This application declares usage statistics access. This requires explicit user grant in System Settings. Declaration alone does not prove that usage history has been recorded."
+  },
+  "android.permission.BIND_ACCESSIBILITY_SERVICE": {
+    "permission": "android.permission.BIND_ACCESSIBILITY_SERVICE",
+    "category": "Accessibility",
+    "display_name": "Bind to Accessibility Service",
+    "description": "Must be required by an AccessibilityService to ensure that only the Android system can bind to it.",
+    "privacy_implications": [
+      "Accessibility services have full visibility into screen content and can inject user touch inputs and keystrokes.",
+      "Highest privilege vector on Android; abused by sophisticated banking trojans to perform keylogging."
+    ],
+    "sensitive_data": [
+      "Full Screen Contents",
+      "Keystrokes & Input Fields",
+      "Active UI Elements"
+    ],
+    "protection_level": "signature/special",
+    "platform_context": "Must be declared on the AccessibilityService in the manifest with protectionLevel signature. The user must manually navigate to Accessibility Settings and toggle the service on with prominent warnings.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#BIND_ACCESSIBILITY_SERVICE",
+    "risk_level": "CRITICAL",
+    "explanation": "This application declares an accessibility service binding. This capability requires manual user enablement in system accessibility settings. Declaration alone does not prove that screen inspection or automation has occurred."
+  },
+  "android.permission.USE_BIOMETRIC": {
+    "permission": "android.permission.USE_BIOMETRIC",
+    "category": "Biometrics",
+    "display_name": "Use Biometric Hardware",
+    "description": "Allows an app to use device biometric hardware (fingerprint, face unlock) for user authentication.",
+    "privacy_implications": [
+      "Allows triggering the Android system biometric prompt.",
+      "Does not grant access to raw biometric data (fingerprint or facial templates remain securely isolated in the hardware TEE/SE)."
+    ],
+    "sensitive_data": [
+      "Biometric Authentication Result (Success/Failure)"
+    ],
+    "protection_level": "normal",
+    "platform_context": "Introduced in Android 9 (API level 28). Replaces the older deprecated USE_FINGERPRINT permission. Actual biometric processing is handled by BiometricPrompt inside the OS secure enclave.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#USE_BIOMETRIC",
+    "risk_level": "LOW",
+    "explanation": "This application declares biometric authentication capability. This declaration alone does not prove that biometric prompts have been displayed or verified."
+  },
+  "android.permission.VIBRATE": {
+    "permission": "android.permission.VIBRATE",
+    "category": "Device Hardware",
+    "display_name": "Control Vibration",
+    "description": "Allows access to the vibration actuator for haptic feedback.",
+    "privacy_implications": [
+      "Triggers haptic feedback and vibrations.",
+      "No direct personal data collection risk."
+    ],
+    "sensitive_data": [],
+    "protection_level": "normal",
+    "platform_context": "Normal protection level present since API level 1. Automatically granted at installation time.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#VIBRATE",
+    "risk_level": "NEGLIGIBLE",
+    "explanation": "This application declares vibration control. This declaration alone does not prove that haptic feedback has been triggered."
+  },
+  "android.permission.WAKE_LOCK": {
+    "permission": "android.permission.WAKE_LOCK",
+    "category": "Power",
+    "display_name": "Prevent Phone from Sleeping",
+    "description": "Allows using PowerManager WakeLocks to keep processor from sleeping or screen from dimming.",
+    "privacy_implications": [
+      "Allows keeping CPU awake during background operations.",
+      "Can impact battery consumption; modern apps should prefer WorkManager."
+    ],
+    "sensitive_data": [],
+    "protection_level": "normal",
+    "platform_context": "Normal protection level present since API level 1. Automatically granted by the system.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#WAKE_LOCK",
+    "risk_level": "LOW",
+    "explanation": "This application declares power wake lock access. This declaration alone does not prove that wake locks have been held."
+  },
+  "android.permission.RECEIVE_BOOT_COMPLETED": {
+    "permission": "android.permission.RECEIVE_BOOT_COMPLETED",
+    "category": "System",
+    "display_name": "Receive Boot Completed",
+    "description": "Allows an application to receive the ACTION_BOOT_COMPLETED broadcast sent after the system finishes booting.",
+    "privacy_implications": [
+      "Enables application components to initialize automatically on device restart.",
+      "Can provide execution persistence across device reboots."
+    ],
+    "sensitive_data": [
+      "Device Boot Event"
+    ],
+    "protection_level": "normal",
+    "platform_context": "Normal protection level present since API level 1. Automatically granted at installation time. Modern Android limits background service starts from boot receivers.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#RECEIVE_BOOT_COMPLETED",
+    "risk_level": "LOW",
+    "explanation": "This application declares permission to receive boot completion. This declaration alone does not prove that persistent background activity is executed."
+  },
+  "android.permission.NEARBY_WIFI_DEVICES": {
+    "permission": "android.permission.NEARBY_WIFI_DEVICES",
+    "category": "Network",
+    "display_name": "Nearby Wi-Fi Devices Access",
+    "description": "Allows an application to discover and connect to nearby Wi-Fi devices without deriving physical geographic location.",
+    "privacy_implications": [
+      "Allows communicating with peer devices over local Wi-Fi networks.",
+      "May disclose Wi-Fi SSID names and BSSID hardware identifiers."
+    ],
+    "sensitive_data": [
+      "Wi-Fi SSID Names",
+      "BSSID Hardware MACs",
+      "Peer Device Identifiers"
+    ],
+    "protection_level": "dangerous",
+    "platform_context": "Introduced in Android 13 (API level 33). Decouples Wi-Fi device scanning from geographic location permission when neverForLocation flag is used.",
+    "documentation_url": "https://developer.android.com/reference/android/Manifest.permission#NEARBY_WIFI_DEVICES",
+    "risk_level": "MEDIUM",
+    "explanation": "This application declares nearby Wi-Fi device access. This declaration does not prove that local device scanning has been executed."
+  }
+}

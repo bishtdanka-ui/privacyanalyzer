@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  =============================================================================
+  SYNTHETIC DEMO DATA — NOT REAL USER DATA
+  Application: Synthetic Pulse Chat & Messaging
+  Purpose: Real-time encrypted text messaging, photo sharing, voice notes, and contact discovery.
+  Security Profile: Multi-capability communications suite with camera, audio, and contacts.
+  =============================================================================
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.privacyguard.demo.pulsechat"
+    android:versionCode="310"
+    android:versionName="3.1.0">
+
+    <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34" />
+
+    <!-- Contact address book discovery to find existing friends -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+    <!-- Capturing photos and real-time voice notes to send in chats -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!-- Storage and media access for saving received attachments -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+
+    <!-- Incoming message notifications -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Cloud message transmission -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <application
+        android:label="Pulse Chat"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_chat">
+
+        <activity
+            android:name=".ChatListActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
+</manifest>
+

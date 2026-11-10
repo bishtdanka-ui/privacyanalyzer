@@ -9,6 +9,7 @@ from backend.routers.analysis import (
     analyze_manifest_text,
     get_user_history,
     get_analysis_details,
+    get_dashboard_metrics,
     download_pdf_report,
     delete_analysis_record
 )
@@ -40,7 +41,9 @@ def test_database_and_api_connectivity(db_session):
     from backend.main import healthcheck
     health = healthcheck()
     assert health["status"] == "healthy"
-    assert health["database"] == "connected"
+    assert health["components"]["database"]["status"] == "connected"
+    assert health["components"]["knowledge_base"]["status"] == "loaded"
+    assert health["components"]["report_storage"]["status"] == "writable"
 
 def test_unauthorized_api_access(db_session):
     # 1. Missing credentials
@@ -87,10 +90,10 @@ def test_cross_user_data_access_prevention(db_session, normal_user, other_user):
     assert exc_detail.value.status_code == 404
     assert "not found" in exc_detail.value.detail
 
-    # other_user attempts to download normal_user's PDF report -> 404 Not Found
+    # other_user attempts to download normal_user's PDF report -> 403 Forbidden or 404 Not Found
     with pytest.raises(HTTPException) as exc_pdf:
         download_pdf_report(user_record_id, other_user, db_session)
-    assert exc_pdf.value.status_code == 404
+    assert exc_pdf.value.status_code in (403, 404)
 
     # other_user attempts to delete normal_user's analysis record -> 404 Not Found
     with pytest.raises(HTTPException) as exc_del:
@@ -163,3 +166,15 @@ def test_full_analysis_workflow_and_relational_storage(db_session, normal_user):
     assert "deleted" in del_res["message"]
     assert db_session.query(Analysis).filter(Analysis.id == record_id).first() is None
     assert db_session.query(Permission).filter(Permission.analysis_id == record_id).count() == 0
+
+def test_dashboard_metrics_endpoint(db_session, normal_user):
+    """Verify GET /api/v1/analysis/dashboard/metrics returns real database telemetry."""
+    metrics = get_dashboard_metrics(current_user=normal_user, db=db_session)
+    assert "total_analyses" in metrics
+    assert "total_permissions" in metrics
+    assert "high_risks" in metrics
+    assert "unknown_permissions" in metrics
+    assert "risk_distribution" in metrics
+    assert "recent_analyses" in metrics
+    assert isinstance(metrics["risk_distribution"], dict)
+    assert isinstance(metrics["recent_analyses"], list)

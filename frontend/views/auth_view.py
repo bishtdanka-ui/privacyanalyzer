@@ -1,14 +1,19 @@
+"""
+PrivacyGuard — Authentication View
+Secure Login & Registration Pages with Argon2id Password Strength Meter
+"""
+
 import streamlit as st
 import re
-from frontend.api_client import api_client
-from frontend.state import login_user
+from frontend.auth_client import auth_client
+from frontend.theme import render_brand_header
 
 def calculate_password_strength(password: str):
     """
-    Returns score (0-100), label, and list of requirement checks.
+    Returns score (0-100), label, color, and list of requirement checks.
     """
     if not password:
-        return 0, "Empty", []
+        return 0, "Empty", "gray", []
     
     checks = [
         ("At least 8 characters", len(password) >= 8),
@@ -28,20 +33,20 @@ def calculate_password_strength(password: str):
         label = "Moderate"
         color = "orange"
     else:
-        label = "Strong (Argon2id Ready)"
+        label = "Strong (Argon2id Compliant)"
         color = "green"
         
     return score, label, color, checks
 
 def render_auth_view():
-    st.markdown("<h1 style='text-align: center; color: #1e88e5;'>🛡️ Explainable Privacy & Permission Analyzer</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; color: #90a4ae;'>Enterprise Application Security & Privacy Auditing — PS02</p>", unsafe_allow_html=True)
-    st.write("")
-
-    auth_mode = st.session_state.get("auth_mode", "login")
-
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
+        render_brand_header(
+            title="🛡️ PrivacyGuard",
+            subtitle="Explainable Application Privacy & Permission Risk Analyzer — PS02"
+        )
+        
+        auth_mode = st.session_state.get("auth_mode", "login")
         if auth_mode == "login":
             render_login_card()
         else:
@@ -49,18 +54,15 @@ def render_auth_view():
 
 def render_login_card():
     with st.container(border=True):
-        st.subheader("🔐 Secure Sign In")
-        st.caption("Access the Security Operations Center with your analyst credentials.")
+        st.subheader("🔐 Analyst Portal Sign In")
+        st.caption("Access the Security Operations Center with your authenticated credentials.")
 
-        # Email
-        login_email = st.text_input("Corporate / Analyst Email", placeholder="analyst@domain.com", key="login_email_input")
+        login_email = st.text_input("Analyst / Corporate Email", placeholder="analyst@organization.com", key="login_email_input")
         
-        # Show/Hide password toggle
         show_pwd = st.checkbox("Show password", key="login_show_pwd")
         pwd_type = "default" if show_pwd else "password"
         login_pwd = st.text_input("Password", type=pwd_type, placeholder="Enter master password", key="login_pwd_input")
         
-        # Remember-session option
         remember_me = st.checkbox("Remember session (extended 30-day token)", value=False, key="login_remember_me")
 
         st.write("")
@@ -73,12 +75,8 @@ def render_login_card():
                 st.error("Please provide a valid email format.")
             else:
                 with st.spinner("Verifying credentials against Argon2id database..."):
-                    success, resp = api_client.login(login_email, login_pwd, remember_me=remember_me)
+                    success, resp = auth_client.login(login_email, login_pwd, remember_me=remember_me)
                     if success:
-                        access_token = resp["access_token"]
-                        refresh_token = resp.get("refresh_token")
-                        user = resp["user"]
-                        login_user(access_token, user, refresh_token)
                         st.success("Authentication successful! Loading dashboard...")
                         st.rerun()
                     else:
@@ -90,18 +88,18 @@ def render_login_card():
             st.session_state["auth_mode"] = "register"
             st.rerun()
 
-    # Demo Credentials Hint
-    with st.expander("ℹ️ Evaluator Default Administrator Account", expanded=False):
+    # Enterprise Authentication Security Posture Notice
+    with st.expander("ℹ️ Enterprise Authentication & Security Posture", expanded=False):
         st.markdown("""
-        - **Admin Email:** `admin@privacyanalyzer.local`
-        - **Password:** `AdminSecurePassword123!`
-        - **Security:** Argon2id hash with rotating session refresh tokens
+        - **Cryptographic Hashing:** Argon2id with cryptographically random per-user salt.
+        - **Session Tokens:** Short-lived access JWTs with rotating refresh tokens stored in database.
+        - **Zero Client Trust:** Authentication and role enforcement are governed strictly by the backend authority.
         """)
 
 def render_register_card():
     with st.container(border=True):
         st.subheader("📝 Analyst Account Registration")
-        st.caption("Register for authorized access to Android manifest & privacy evaluation.")
+        st.caption("Register for authorized access to Android privacy audit workflows.")
 
         reg_name = st.text_input("Full Name", placeholder="e.g. Jane Doe, Senior Analyst", key="reg_name_input")
         reg_email = st.text_input("Email Address", placeholder="analyst@organization.com", key="reg_email_input")
@@ -122,8 +120,7 @@ def render_register_card():
                     icon = "✅" if passed else "❌"
                     st.markdown(f"{icon} {desc}")
 
-        # Terms acceptance
-        terms_accepted = st.checkbox("I accept the Application Privacy & Security Assessment Terms of Service", value=False, key="reg_terms")
+        terms_accepted = st.checkbox("I accept the PrivacyGuard Security & Privacy Assessment Terms", value=False, key="reg_terms")
 
         st.write("")
         register_btn = st.button("Complete Registration", type="primary", use_container_width=True)
@@ -138,26 +135,26 @@ def render_register_card():
             elif not terms_accepted:
                 st.error("You must accept the terms of service to proceed.")
             else:
-                score, label, color, _ = calculate_password_strength(reg_password)
-                if score < 100:
-                    st.error("Please ensure your password satisfies all 5 security requirements.")
+                score, _, _, _ = calculate_password_strength(reg_password)
+                if score < 60:
+                    st.warning("Password does not meet minimum complexity standards. Please include upper, lower, numbers, and symbols.")
                 else:
-                    with st.spinner("Generating Argon2id salt and hashing credentials..."):
-                        success, resp = api_client.register(
+                    with st.spinner("Hashing with Argon2id and registering account..."):
+                        success, resp = auth_client.register(
                             email=reg_email,
                             full_name=reg_name,
                             password=reg_password,
                             terms_accepted=terms_accepted
                         )
                         if success:
-                            st.success("Account successfully registered with Argon2id protection! You can now sign in.")
+                            st.success("Account created successfully! Please sign in with your credentials.")
                             st.session_state["auth_mode"] = "login"
                             st.rerun()
                         else:
                             st.error(f"❌ {resp}")
 
         st.divider()
-        st.markdown("Already have an account?")
-        if st.button("← Back to Secure Sign In", use_container_width=True):
+        st.markdown("Already have an analyst account?")
+        if st.button("← Back to Sign In", use_container_width=True):
             st.session_state["auth_mode"] = "login"
             st.rerun()

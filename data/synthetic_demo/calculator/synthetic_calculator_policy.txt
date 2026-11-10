@@ -1,0 +1,15 @@
+PRIVACY POLICY FOR SYNTHETIC CALCULATOR (DEMO DATA — NOT REAL USER DATA)
+Last Updated: November 2026
+
+1. DATA COLLECTION AND USAGE
+Synthetic Calculator is designed with privacy as a fundamental principle. We do not collect, store, or transmit any personal information, location coordinates, photos, contacts, or sensitive device telemetry. All arithmetic and unit calculations occur exclusively on your local device.
+
+2. ADVERTISING AND NETWORK USAGE
+Our application displays banner advertisements provided by trusted ad networks. To display these advertisements, the application utilizes your Internet and network state connection to fetch static advertisement banners. No personal identifiers or tracking profiles are shared with third parties.
+
+3. DEVICE CAPABILITIES
+We use the device vibration motor solely to provide optional haptic feedback when tapping calculation keys.
+
+4. USER CONSENT & RIGHTS
+You may disable haptic feedback at any time in the app settings. No user account or registration is required to use this application.
+

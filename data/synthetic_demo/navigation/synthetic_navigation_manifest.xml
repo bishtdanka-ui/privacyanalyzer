@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  =============================================================================
+  SYNTHETIC DEMO DATA — NOT REAL USER DATA
+  Application: Synthetic RoadMaster Navigation
+  Purpose: Turn-by-turn driving navigation, offline maps, and live traffic alerts.
+  Security Profile: Legitimate location-intensive application with background tracking.
+  =============================================================================
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.privacyguard.demo.navigation"
+    android:versionCode="204"
+    android:versionName="2.4.0">
+
+    <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34" />
+
+    <!-- Precise GPS and cellular network location for route calculation -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    
+    <!-- Background guidance while screen is off or app is minimized -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Map tiles downloading and traffic data exchange -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:label="RoadMaster Navigation"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_nav">
+
+        <activity
+            android:name=".MapActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".NavigationForegroundService"
+            android:foregroundServiceType="location"
+            android:exported="false" />
+
+    </application>
+</manifest>
+
