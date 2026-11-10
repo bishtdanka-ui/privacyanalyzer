@@ -16,6 +16,7 @@ import os
 import re
 from pathlib import Path
 from typing import Dict, Any, List, Optional, Set, Union
+from xml.etree.ElementTree import Element
 import defusedxml.ElementTree as DefusedET
 from defusedxml.common import DefusedXmlException, DTDForbidden, EntitiesForbidden
 
@@ -85,7 +86,7 @@ class AndroidManifestParser:
         return tag.split("}")[-1] if "}" in tag else tag
 
     @classmethod
-    def get_android_attr(cls, elem: DefusedET.Element, attr_name: str) -> Optional[str]:
+    def get_android_attr(cls, elem: Element, attr_name: str) -> Optional[str]:
         """
         Safely retrieve an Android-namespaced attribute with robust fallback
         for varying namespace declarations, prefixes, and unqualified forms.
