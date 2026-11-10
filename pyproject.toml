@@ -17,6 +17,14 @@ requires-python = ">=3.10"
 entrypoint = "backend.main:app"
 
 # =============================================================================
+# VERCEL FASTAPI STATIC FILE OPTIMIZATION
+# Explicitly opt-out of CDN static asset collection since this is a pure REST API.
+# Prevents: "Warning: FastAPI static file collection failed. Static files will not be served from the CDN."
+# =============================================================================
+[tool.vercel.fastapi.static]
+cdn = false
+
+# =============================================================================
 # SETUPTOOLS PACKAGE DISCOVERY CONFIGURATION
 # Explicitly discover and package only application modules required by backend,
 # preventing setuptools flat-layout auto-discovery errors with frontend/tests/data.
